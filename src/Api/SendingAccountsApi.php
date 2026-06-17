@@ -78,6 +78,9 @@ class SendingAccountsApi
         'managementActivateProvider' => [
             'application/json',
         ],
+        'managementCancelSharedAmazonSesLimitRequest' => [
+            'application/json',
+        ],
         'managementCreateProvider' => [
             'application/json',
         ],
@@ -183,7 +186,11 @@ class SendingAccountsApi
         ?string $idempotency_key = null,
         string $contentType = self::contentTypes['managementActivateProvider'][0]
     ): \Sendmux\Management\Model\ProviderItemResponse|\Sendmux\Management\Model\ApiError {
-        list($response) = $this->managementActivateProviderWithHttpInfo($public_id, $idempotency_key, $contentType);
+        list($response) = $this->managementActivateProviderWithHttpInfo(
+            $public_id,
+            $idempotency_key,
+            $contentType
+        );
         return $response;
     }
 
@@ -192,8 +199,8 @@ class SendingAccountsApi
      *
      * Activate a sending account
      *
-     * @param  string $public_id (required)
-     * @param  string|null $idempotency_key (optional)
+     * @param  string $public_id public_id (required)
+     * @param  string|null $idempotency_key idempotency_key (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementActivateProvider'] to see the possible values for this operation
      *
      * @throws ApiException on non-2xx response or if the response body is not in the expected format
@@ -205,7 +212,11 @@ class SendingAccountsApi
         ?string $idempotency_key = null,
         string $contentType = self::contentTypes['managementActivateProvider'][0]
     ): array {
-        $request = $this->managementActivateProviderRequest($public_id, $idempotency_key, $contentType);
+        $request = $this->managementActivateProviderRequest(
+            $public_id,
+            $idempotency_key,
+            $contentType
+        );
 
         try {
             $options = $this->createHttpClientOption();
@@ -306,8 +317,8 @@ class SendingAccountsApi
      *
      * Activate a sending account
      *
-     * @param  string $public_id (required)
-     * @param  string|null $idempotency_key (optional)
+     * @param  string $public_id public_id (required)
+     * @param  string|null $idempotency_key idempotency_key (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementActivateProvider'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -318,7 +329,11 @@ class SendingAccountsApi
         ?string $idempotency_key = null,
         string $contentType = self::contentTypes['managementActivateProvider'][0]
     ): PromiseInterface {
-        return $this->managementActivateProviderAsyncWithHttpInfo($public_id, $idempotency_key, $contentType)
+        return $this->managementActivateProviderAsyncWithHttpInfo(
+            $public_id,
+            $idempotency_key,
+            $contentType
+        )
             ->then(
                 function ($response) {
                     return $response[0];
@@ -331,8 +346,8 @@ class SendingAccountsApi
      *
      * Activate a sending account
      *
-     * @param  string $public_id (required)
-     * @param  string|null $idempotency_key (optional)
+     * @param  string $public_id public_id (required)
+     * @param  string|null $idempotency_key idempotency_key (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementActivateProvider'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -344,7 +359,11 @@ class SendingAccountsApi
         string $contentType = self::contentTypes['managementActivateProvider'][0]
     ): PromiseInterface {
         $returnType = '\Sendmux\Management\Model\ProviderItemResponse';
-        $request = $this->managementActivateProviderRequest($public_id, $idempotency_key, $contentType);
+        $request = $this->managementActivateProviderRequest(
+            $public_id,
+            $idempotency_key,
+            $contentType
+        );
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -366,18 +385,34 @@ class SendingAccountsApi
                     ];
                 },
                 function ($exception) {
-                    $response = $exception->getResponse();
-                    $statusCode = $response->getStatusCode();
-                    throw new ApiException(
-                        sprintf(
-                            '[%d] Error connecting to the API (%s)',
-                            $statusCode,
-                            $exception->getRequest()->getUri()
-                        ),
-                        $statusCode,
-                        $response->getHeaders(),
-                        (string) $response->getBody()
-                    );
+                    if ($exception instanceof RequestException) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            $exception->getResponse() ? $exception->getResponse()->getHeaders() : null,
+                            $exception->getResponse() ? (string) $exception->getResponse()->getBody() : null
+                        );
+                    }
+
+                    if ($exception instanceof ConnectException) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            null,
+                            null
+                        );
+                    }
+
+                    if ($exception instanceof \Throwable) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            null,
+                            null
+                        );
+                    }
+
+                    throw new ApiException('[0] Unknown API error', 0, null, null);
                 }
             );
     }
@@ -385,8 +420,8 @@ class SendingAccountsApi
     /**
      * Create request for operation 'managementActivateProvider'
      *
-     * @param  string $public_id (required)
-     * @param  string|null $idempotency_key (optional)
+     * @param  string $public_id public_id (required)
+     * @param  string|null $idempotency_key idempotency_key (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementActivateProvider'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -490,6 +525,340 @@ class SendingAccountsApi
     }
 
     /**
+     * Operation managementCancelSharedAmazonSesLimitRequest
+     *
+     * Cancel a shared Amazon SES daily limit request
+     *
+     * @param  string $request_id request_id (required)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementCancelSharedAmazonSesLimitRequest'] to see the possible values for this operation
+     *
+     * @throws ApiException on non-2xx response or if the response body is not in the expected format
+     * @throws InvalidArgumentException
+     * @return \Sendmux\Management\Model\SharedAmazonSesLimitRequestCancelResponse|\Sendmux\Management\Model\ApiError
+     */
+    public function managementCancelSharedAmazonSesLimitRequest(
+        string $request_id,
+        string $contentType = self::contentTypes['managementCancelSharedAmazonSesLimitRequest'][0]
+    ): \Sendmux\Management\Model\SharedAmazonSesLimitRequestCancelResponse|\Sendmux\Management\Model\ApiError {
+        list($response) = $this->managementCancelSharedAmazonSesLimitRequestWithHttpInfo(
+            $request_id,
+            $contentType
+        );
+        return $response;
+    }
+
+    /**
+     * Operation managementCancelSharedAmazonSesLimitRequestWithHttpInfo
+     *
+     * Cancel a shared Amazon SES daily limit request
+     *
+     * @param  string $request_id request_id (required)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementCancelSharedAmazonSesLimitRequest'] to see the possible values for this operation
+     *
+     * @throws ApiException on non-2xx response or if the response body is not in the expected format
+     * @throws InvalidArgumentException
+     * @return array of \Sendmux\Management\Model\SharedAmazonSesLimitRequestCancelResponse|\Sendmux\Management\Model\ApiError|\Sendmux\Management\Model\ApiError, HTTP status code, HTTP response headers (array of strings)
+     */
+    public function managementCancelSharedAmazonSesLimitRequestWithHttpInfo(
+        string $request_id,
+        string $contentType = self::contentTypes['managementCancelSharedAmazonSesLimitRequest'][0]
+    ): array {
+        $request = $this->managementCancelSharedAmazonSesLimitRequestRequest(
+            $request_id,
+            $contentType
+        );
+
+        try {
+            $options = $this->createHttpClientOption();
+            try {
+                $response = $this->client->send($request, $options);
+            } catch (RequestException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
+                    $e->getResponse() ? (string) $e->getResponse()->getBody() : null
+                );
+            } catch (ConnectException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    null,
+                    null
+                );
+            }
+
+            $statusCode = $response->getStatusCode();
+
+            switch ($statusCode) {
+                case 200:
+                    return $this->handleResponseWithDataType(
+                        '\Sendmux\Management\Model\SharedAmazonSesLimitRequestCancelResponse',
+                        $request,
+                        $response,
+                    );
+                case 404:
+                    return $this->handleResponseWithDataType(
+                        '\Sendmux\Management\Model\ApiError',
+                        $request,
+                        $response,
+                    );
+                case 409:
+                    return $this->handleResponseWithDataType(
+                        '\Sendmux\Management\Model\ApiError',
+                        $request,
+                        $response,
+                    );
+            }
+
+
+            if ($statusCode < 200 || $statusCode > 299) {
+                throw new ApiException(
+                    sprintf(
+                        '[%d] Error connecting to the API (%s)',
+                        $statusCode,
+                        (string) $request->getUri()
+                    ),
+                    $statusCode,
+                    $response->getHeaders(),
+                    (string) $response->getBody()
+                );
+            }
+
+            return $this->handleResponseWithDataType(
+                '\Sendmux\Management\Model\SharedAmazonSesLimitRequestCancelResponse',
+                $request,
+                $response,
+            );
+        } catch (ApiException $e) {
+            switch ($e->getCode()) {
+                case 200:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Sendmux\Management\Model\SharedAmazonSesLimitRequestCancelResponse',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 404:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Sendmux\Management\Model\ApiError',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 409:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Sendmux\Management\Model\ApiError',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+            }
+
+            throw $e;
+        }
+    }
+
+    /**
+     * Operation managementCancelSharedAmazonSesLimitRequestAsync
+     *
+     * Cancel a shared Amazon SES daily limit request
+     *
+     * @param  string $request_id request_id (required)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementCancelSharedAmazonSesLimitRequest'] to see the possible values for this operation
+     *
+     * @throws InvalidArgumentException
+     * @return PromiseInterface
+     */
+    public function managementCancelSharedAmazonSesLimitRequestAsync(
+        string $request_id,
+        string $contentType = self::contentTypes['managementCancelSharedAmazonSesLimitRequest'][0]
+    ): PromiseInterface {
+        return $this->managementCancelSharedAmazonSesLimitRequestAsyncWithHttpInfo(
+            $request_id,
+            $contentType
+        )
+            ->then(
+                function ($response) {
+                    return $response[0];
+                }
+            );
+    }
+
+    /**
+     * Operation managementCancelSharedAmazonSesLimitRequestAsyncWithHttpInfo
+     *
+     * Cancel a shared Amazon SES daily limit request
+     *
+     * @param  string $request_id request_id (required)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementCancelSharedAmazonSesLimitRequest'] to see the possible values for this operation
+     *
+     * @throws InvalidArgumentException
+     * @return PromiseInterface
+     */
+    public function managementCancelSharedAmazonSesLimitRequestAsyncWithHttpInfo(
+        string $request_id,
+        string $contentType = self::contentTypes['managementCancelSharedAmazonSesLimitRequest'][0]
+    ): PromiseInterface {
+        $returnType = '\Sendmux\Management\Model\SharedAmazonSesLimitRequestCancelResponse';
+        $request = $this->managementCancelSharedAmazonSesLimitRequestRequest(
+            $request_id,
+            $contentType
+        );
+
+        return $this->client
+            ->sendAsync($request, $this->createHttpClientOption())
+            ->then(
+                function ($response) use ($returnType) {
+                    if (in_array($returnType, ['\SplFileObject', '\Psr\Http\Message\StreamInterface'])) {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string) $response->getBody();
+                        if ($returnType !== 'string') {
+                            $content = json_decode($content);
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, $returnType, []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                },
+                function ($exception) {
+                    if ($exception instanceof RequestException) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            $exception->getResponse() ? $exception->getResponse()->getHeaders() : null,
+                            $exception->getResponse() ? (string) $exception->getResponse()->getBody() : null
+                        );
+                    }
+
+                    if ($exception instanceof ConnectException) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            null,
+                            null
+                        );
+                    }
+
+                    if ($exception instanceof \Throwable) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            null,
+                            null
+                        );
+                    }
+
+                    throw new ApiException('[0] Unknown API error', 0, null, null);
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'managementCancelSharedAmazonSesLimitRequest'
+     *
+     * @param  string $request_id request_id (required)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementCancelSharedAmazonSesLimitRequest'] to see the possible values for this operation
+     *
+     * @throws InvalidArgumentException
+     * @return \GuzzleHttp\Psr7\Request
+     */
+    public function managementCancelSharedAmazonSesLimitRequestRequest(
+        string $request_id,
+        string $contentType = self::contentTypes['managementCancelSharedAmazonSesLimitRequest'][0]
+    ): Request {
+
+        // verify the required parameter 'request_id' is set
+        if ($request_id === null || (is_array($request_id) && count($request_id) === 0)) {
+            throw new InvalidArgumentException(
+                'Missing the required parameter $request_id when calling managementCancelSharedAmazonSesLimitRequest'
+            );
+        }
+
+
+        $resourcePath = '/providers/shared-amazon-ses-limit-request/{request_id}';
+        $formParams = [];
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+        $multipart = false;
+
+
+
+        // path params
+        if ($request_id !== null) {
+            $resourcePath = str_replace(
+                '{request_id}',
+                ObjectSerializer::toPathValue($request_id),
+                $resourcePath
+            );
+        }
+
+
+        $headers = $this->headerSelector->selectHeaders(
+            ['application/json', ],
+            $contentType,
+            $multipart
+        );
+
+        // for model (json/xml)
+        if (count($formParams) > 0) {
+            if ($multipart) {
+                $multipartContents = [];
+                foreach ($formParams as $formParamName => $formParamValue) {
+                    $formParamValueItems = is_array($formParamValue) ? $formParamValue : [$formParamValue];
+                    foreach ($formParamValueItems as $formParamValueItem) {
+                        $multipartContents[] = [
+                            'name' => $formParamName,
+                            'contents' => $formParamValueItem
+                        ];
+                    }
+                }
+                // for HTTP post (form)
+                $httpBody = new MultipartStream($multipartContents);
+            } elseif (stripos($headers['Content-Type'], 'application/json') !== false) {
+                # if Content-Type contains "application/json", json_encode the form parameters
+                $httpBody = \GuzzleHttp\Utils::jsonEncode($formParams);
+            } else {
+                // for HTTP post (form)
+                $httpBody = ObjectSerializer::buildQuery($formParams);
+            }
+        }
+
+        // this endpoint requires Bearer (API Key) authentication (access token)
+        if (!empty($this->config->getAccessToken())) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
+        }
+
+        $defaultHeaders = [];
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        $operationHost = $this->config->getHost();
+        $query = ObjectSerializer::buildQuery($queryParams);
+        return new Request(
+            'DELETE',
+            $operationHost . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
      * Operation managementCreateProvider
      *
      * Create an SMTP sending account
@@ -507,7 +876,11 @@ class SendingAccountsApi
         ?\Sendmux\Management\Model\ProviderCreateBody $provider_create_body = null,
         string $contentType = self::contentTypes['managementCreateProvider'][0]
     ): \Sendmux\Management\Model\ProviderItemResponse|\Sendmux\Management\Model\ApiError {
-        list($response) = $this->managementCreateProviderWithHttpInfo($idempotency_key, $provider_create_body, $contentType);
+        list($response) = $this->managementCreateProviderWithHttpInfo(
+            $idempotency_key,
+            $provider_create_body,
+            $contentType
+        );
         return $response;
     }
 
@@ -516,8 +889,8 @@ class SendingAccountsApi
      *
      * Create an SMTP sending account
      *
-     * @param  string|null $idempotency_key (optional)
-     * @param  \Sendmux\Management\Model\ProviderCreateBody|null $provider_create_body (optional)
+     * @param  string|null $idempotency_key idempotency_key (optional)
+     * @param  \Sendmux\Management\Model\ProviderCreateBody|null $provider_create_body provider_create_body (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementCreateProvider'] to see the possible values for this operation
      *
      * @throws ApiException on non-2xx response or if the response body is not in the expected format
@@ -529,7 +902,11 @@ class SendingAccountsApi
         ?\Sendmux\Management\Model\ProviderCreateBody $provider_create_body = null,
         string $contentType = self::contentTypes['managementCreateProvider'][0]
     ): array {
-        $request = $this->managementCreateProviderRequest($idempotency_key, $provider_create_body, $contentType);
+        $request = $this->managementCreateProviderRequest(
+            $idempotency_key,
+            $provider_create_body,
+            $contentType
+        );
 
         try {
             $options = $this->createHttpClientOption();
@@ -630,8 +1007,8 @@ class SendingAccountsApi
      *
      * Create an SMTP sending account
      *
-     * @param  string|null $idempotency_key (optional)
-     * @param  \Sendmux\Management\Model\ProviderCreateBody|null $provider_create_body (optional)
+     * @param  string|null $idempotency_key idempotency_key (optional)
+     * @param  \Sendmux\Management\Model\ProviderCreateBody|null $provider_create_body provider_create_body (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementCreateProvider'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -642,7 +1019,11 @@ class SendingAccountsApi
         ?\Sendmux\Management\Model\ProviderCreateBody $provider_create_body = null,
         string $contentType = self::contentTypes['managementCreateProvider'][0]
     ): PromiseInterface {
-        return $this->managementCreateProviderAsyncWithHttpInfo($idempotency_key, $provider_create_body, $contentType)
+        return $this->managementCreateProviderAsyncWithHttpInfo(
+            $idempotency_key,
+            $provider_create_body,
+            $contentType
+        )
             ->then(
                 function ($response) {
                     return $response[0];
@@ -655,8 +1036,8 @@ class SendingAccountsApi
      *
      * Create an SMTP sending account
      *
-     * @param  string|null $idempotency_key (optional)
-     * @param  \Sendmux\Management\Model\ProviderCreateBody|null $provider_create_body (optional)
+     * @param  string|null $idempotency_key idempotency_key (optional)
+     * @param  \Sendmux\Management\Model\ProviderCreateBody|null $provider_create_body provider_create_body (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementCreateProvider'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -668,7 +1049,11 @@ class SendingAccountsApi
         string $contentType = self::contentTypes['managementCreateProvider'][0]
     ): PromiseInterface {
         $returnType = '\Sendmux\Management\Model\ProviderItemResponse';
-        $request = $this->managementCreateProviderRequest($idempotency_key, $provider_create_body, $contentType);
+        $request = $this->managementCreateProviderRequest(
+            $idempotency_key,
+            $provider_create_body,
+            $contentType
+        );
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -690,18 +1075,34 @@ class SendingAccountsApi
                     ];
                 },
                 function ($exception) {
-                    $response = $exception->getResponse();
-                    $statusCode = $response->getStatusCode();
-                    throw new ApiException(
-                        sprintf(
-                            '[%d] Error connecting to the API (%s)',
-                            $statusCode,
-                            $exception->getRequest()->getUri()
-                        ),
-                        $statusCode,
-                        $response->getHeaders(),
-                        (string) $response->getBody()
-                    );
+                    if ($exception instanceof RequestException) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            $exception->getResponse() ? $exception->getResponse()->getHeaders() : null,
+                            $exception->getResponse() ? (string) $exception->getResponse()->getBody() : null
+                        );
+                    }
+
+                    if ($exception instanceof ConnectException) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            null,
+                            null
+                        );
+                    }
+
+                    if ($exception instanceof \Throwable) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            null,
+                            null
+                        );
+                    }
+
+                    throw new ApiException('[0] Unknown API error', 0, null, null);
                 }
             );
     }
@@ -709,8 +1110,8 @@ class SendingAccountsApi
     /**
      * Create request for operation 'managementCreateProvider'
      *
-     * @param  string|null $idempotency_key (optional)
-     * @param  \Sendmux\Management\Model\ProviderCreateBody|null $provider_create_body (optional)
+     * @param  string|null $idempotency_key idempotency_key (optional)
+     * @param  \Sendmux\Management\Model\ProviderCreateBody|null $provider_create_body provider_create_body (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementCreateProvider'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -822,7 +1223,10 @@ class SendingAccountsApi
         ?string $idempotency_key = null,
         string $contentType = self::contentTypes['managementCreateSharedAmazonSesLimitRequest'][0]
     ): \Sendmux\Management\Model\SharedAmazonSesLimitRequestCreateResponse|\Sendmux\Management\Model\ApiError {
-        list($response) = $this->managementCreateSharedAmazonSesLimitRequestWithHttpInfo($idempotency_key, $contentType);
+        list($response) = $this->managementCreateSharedAmazonSesLimitRequestWithHttpInfo(
+            $idempotency_key,
+            $contentType
+        );
         return $response;
     }
 
@@ -831,7 +1235,7 @@ class SendingAccountsApi
      *
      * Request a shared Amazon SES daily limit increase
      *
-     * @param  string|null $idempotency_key (optional)
+     * @param  string|null $idempotency_key idempotency_key (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementCreateSharedAmazonSesLimitRequest'] to see the possible values for this operation
      *
      * @throws ApiException on non-2xx response or if the response body is not in the expected format
@@ -842,7 +1246,10 @@ class SendingAccountsApi
         ?string $idempotency_key = null,
         string $contentType = self::contentTypes['managementCreateSharedAmazonSesLimitRequest'][0]
     ): array {
-        $request = $this->managementCreateSharedAmazonSesLimitRequestRequest($idempotency_key, $contentType);
+        $request = $this->managementCreateSharedAmazonSesLimitRequestRequest(
+            $idempotency_key,
+            $contentType
+        );
 
         try {
             $options = $this->createHttpClientOption();
@@ -957,7 +1364,7 @@ class SendingAccountsApi
      *
      * Request a shared Amazon SES daily limit increase
      *
-     * @param  string|null $idempotency_key (optional)
+     * @param  string|null $idempotency_key idempotency_key (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementCreateSharedAmazonSesLimitRequest'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -967,7 +1374,10 @@ class SendingAccountsApi
         ?string $idempotency_key = null,
         string $contentType = self::contentTypes['managementCreateSharedAmazonSesLimitRequest'][0]
     ): PromiseInterface {
-        return $this->managementCreateSharedAmazonSesLimitRequestAsyncWithHttpInfo($idempotency_key, $contentType)
+        return $this->managementCreateSharedAmazonSesLimitRequestAsyncWithHttpInfo(
+            $idempotency_key,
+            $contentType
+        )
             ->then(
                 function ($response) {
                     return $response[0];
@@ -980,7 +1390,7 @@ class SendingAccountsApi
      *
      * Request a shared Amazon SES daily limit increase
      *
-     * @param  string|null $idempotency_key (optional)
+     * @param  string|null $idempotency_key idempotency_key (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementCreateSharedAmazonSesLimitRequest'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -991,7 +1401,10 @@ class SendingAccountsApi
         string $contentType = self::contentTypes['managementCreateSharedAmazonSesLimitRequest'][0]
     ): PromiseInterface {
         $returnType = '\Sendmux\Management\Model\SharedAmazonSesLimitRequestCreateResponse';
-        $request = $this->managementCreateSharedAmazonSesLimitRequestRequest($idempotency_key, $contentType);
+        $request = $this->managementCreateSharedAmazonSesLimitRequestRequest(
+            $idempotency_key,
+            $contentType
+        );
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -1013,18 +1426,34 @@ class SendingAccountsApi
                     ];
                 },
                 function ($exception) {
-                    $response = $exception->getResponse();
-                    $statusCode = $response->getStatusCode();
-                    throw new ApiException(
-                        sprintf(
-                            '[%d] Error connecting to the API (%s)',
-                            $statusCode,
-                            $exception->getRequest()->getUri()
-                        ),
-                        $statusCode,
-                        $response->getHeaders(),
-                        (string) $response->getBody()
-                    );
+                    if ($exception instanceof RequestException) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            $exception->getResponse() ? $exception->getResponse()->getHeaders() : null,
+                            $exception->getResponse() ? (string) $exception->getResponse()->getBody() : null
+                        );
+                    }
+
+                    if ($exception instanceof ConnectException) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            null,
+                            null
+                        );
+                    }
+
+                    if ($exception instanceof \Throwable) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            null,
+                            null
+                        );
+                    }
+
+                    throw new ApiException('[0] Unknown API error', 0, null, null);
                 }
             );
     }
@@ -1032,7 +1461,7 @@ class SendingAccountsApi
     /**
      * Create request for operation 'managementCreateSharedAmazonSesLimitRequest'
      *
-     * @param  string|null $idempotency_key (optional)
+     * @param  string|null $idempotency_key idempotency_key (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementCreateSharedAmazonSesLimitRequest'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -1137,7 +1566,11 @@ class SendingAccountsApi
         ?string $idempotency_key = null,
         string $contentType = self::contentTypes['managementDeactivateProvider'][0]
     ): \Sendmux\Management\Model\ProviderItemResponse|\Sendmux\Management\Model\ApiError {
-        list($response) = $this->managementDeactivateProviderWithHttpInfo($public_id, $idempotency_key, $contentType);
+        list($response) = $this->managementDeactivateProviderWithHttpInfo(
+            $public_id,
+            $idempotency_key,
+            $contentType
+        );
         return $response;
     }
 
@@ -1146,8 +1579,8 @@ class SendingAccountsApi
      *
      * Deactivate a sending account
      *
-     * @param  string $public_id (required)
-     * @param  string|null $idempotency_key (optional)
+     * @param  string $public_id public_id (required)
+     * @param  string|null $idempotency_key idempotency_key (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementDeactivateProvider'] to see the possible values for this operation
      *
      * @throws ApiException on non-2xx response or if the response body is not in the expected format
@@ -1159,7 +1592,11 @@ class SendingAccountsApi
         ?string $idempotency_key = null,
         string $contentType = self::contentTypes['managementDeactivateProvider'][0]
     ): array {
-        $request = $this->managementDeactivateProviderRequest($public_id, $idempotency_key, $contentType);
+        $request = $this->managementDeactivateProviderRequest(
+            $public_id,
+            $idempotency_key,
+            $contentType
+        );
 
         try {
             $options = $this->createHttpClientOption();
@@ -1260,8 +1697,8 @@ class SendingAccountsApi
      *
      * Deactivate a sending account
      *
-     * @param  string $public_id (required)
-     * @param  string|null $idempotency_key (optional)
+     * @param  string $public_id public_id (required)
+     * @param  string|null $idempotency_key idempotency_key (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementDeactivateProvider'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -1272,7 +1709,11 @@ class SendingAccountsApi
         ?string $idempotency_key = null,
         string $contentType = self::contentTypes['managementDeactivateProvider'][0]
     ): PromiseInterface {
-        return $this->managementDeactivateProviderAsyncWithHttpInfo($public_id, $idempotency_key, $contentType)
+        return $this->managementDeactivateProviderAsyncWithHttpInfo(
+            $public_id,
+            $idempotency_key,
+            $contentType
+        )
             ->then(
                 function ($response) {
                     return $response[0];
@@ -1285,8 +1726,8 @@ class SendingAccountsApi
      *
      * Deactivate a sending account
      *
-     * @param  string $public_id (required)
-     * @param  string|null $idempotency_key (optional)
+     * @param  string $public_id public_id (required)
+     * @param  string|null $idempotency_key idempotency_key (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementDeactivateProvider'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -1298,7 +1739,11 @@ class SendingAccountsApi
         string $contentType = self::contentTypes['managementDeactivateProvider'][0]
     ): PromiseInterface {
         $returnType = '\Sendmux\Management\Model\ProviderItemResponse';
-        $request = $this->managementDeactivateProviderRequest($public_id, $idempotency_key, $contentType);
+        $request = $this->managementDeactivateProviderRequest(
+            $public_id,
+            $idempotency_key,
+            $contentType
+        );
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -1320,18 +1765,34 @@ class SendingAccountsApi
                     ];
                 },
                 function ($exception) {
-                    $response = $exception->getResponse();
-                    $statusCode = $response->getStatusCode();
-                    throw new ApiException(
-                        sprintf(
-                            '[%d] Error connecting to the API (%s)',
-                            $statusCode,
-                            $exception->getRequest()->getUri()
-                        ),
-                        $statusCode,
-                        $response->getHeaders(),
-                        (string) $response->getBody()
-                    );
+                    if ($exception instanceof RequestException) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            $exception->getResponse() ? $exception->getResponse()->getHeaders() : null,
+                            $exception->getResponse() ? (string) $exception->getResponse()->getBody() : null
+                        );
+                    }
+
+                    if ($exception instanceof ConnectException) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            null,
+                            null
+                        );
+                    }
+
+                    if ($exception instanceof \Throwable) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            null,
+                            null
+                        );
+                    }
+
+                    throw new ApiException('[0] Unknown API error', 0, null, null);
                 }
             );
     }
@@ -1339,8 +1800,8 @@ class SendingAccountsApi
     /**
      * Create request for operation 'managementDeactivateProvider'
      *
-     * @param  string $public_id (required)
-     * @param  string|null $idempotency_key (optional)
+     * @param  string $public_id public_id (required)
+     * @param  string|null $idempotency_key idempotency_key (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementDeactivateProvider'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -1459,7 +1920,10 @@ class SendingAccountsApi
         string $public_id,
         string $contentType = self::contentTypes['managementDeleteProvider'][0]
     ): \Sendmux\Management\Model\ProviderDeletedResponse|\Sendmux\Management\Model\ApiError {
-        list($response) = $this->managementDeleteProviderWithHttpInfo($public_id, $contentType);
+        list($response) = $this->managementDeleteProviderWithHttpInfo(
+            $public_id,
+            $contentType
+        );
         return $response;
     }
 
@@ -1468,7 +1932,7 @@ class SendingAccountsApi
      *
      * Delete a sending account
      *
-     * @param  string $public_id (required)
+     * @param  string $public_id public_id (required)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementDeleteProvider'] to see the possible values for this operation
      *
      * @throws ApiException on non-2xx response or if the response body is not in the expected format
@@ -1479,7 +1943,10 @@ class SendingAccountsApi
         string $public_id,
         string $contentType = self::contentTypes['managementDeleteProvider'][0]
     ): array {
-        $request = $this->managementDeleteProviderRequest($public_id, $contentType);
+        $request = $this->managementDeleteProviderRequest(
+            $public_id,
+            $contentType
+        );
 
         try {
             $options = $this->createHttpClientOption();
@@ -1580,7 +2047,7 @@ class SendingAccountsApi
      *
      * Delete a sending account
      *
-     * @param  string $public_id (required)
+     * @param  string $public_id public_id (required)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementDeleteProvider'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -1590,7 +2057,10 @@ class SendingAccountsApi
         string $public_id,
         string $contentType = self::contentTypes['managementDeleteProvider'][0]
     ): PromiseInterface {
-        return $this->managementDeleteProviderAsyncWithHttpInfo($public_id, $contentType)
+        return $this->managementDeleteProviderAsyncWithHttpInfo(
+            $public_id,
+            $contentType
+        )
             ->then(
                 function ($response) {
                     return $response[0];
@@ -1603,7 +2073,7 @@ class SendingAccountsApi
      *
      * Delete a sending account
      *
-     * @param  string $public_id (required)
+     * @param  string $public_id public_id (required)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementDeleteProvider'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -1614,7 +2084,10 @@ class SendingAccountsApi
         string $contentType = self::contentTypes['managementDeleteProvider'][0]
     ): PromiseInterface {
         $returnType = '\Sendmux\Management\Model\ProviderDeletedResponse';
-        $request = $this->managementDeleteProviderRequest($public_id, $contentType);
+        $request = $this->managementDeleteProviderRequest(
+            $public_id,
+            $contentType
+        );
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -1636,18 +2109,34 @@ class SendingAccountsApi
                     ];
                 },
                 function ($exception) {
-                    $response = $exception->getResponse();
-                    $statusCode = $response->getStatusCode();
-                    throw new ApiException(
-                        sprintf(
-                            '[%d] Error connecting to the API (%s)',
-                            $statusCode,
-                            $exception->getRequest()->getUri()
-                        ),
-                        $statusCode,
-                        $response->getHeaders(),
-                        (string) $response->getBody()
-                    );
+                    if ($exception instanceof RequestException) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            $exception->getResponse() ? $exception->getResponse()->getHeaders() : null,
+                            $exception->getResponse() ? (string) $exception->getResponse()->getBody() : null
+                        );
+                    }
+
+                    if ($exception instanceof ConnectException) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            null,
+                            null
+                        );
+                    }
+
+                    if ($exception instanceof \Throwable) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            null,
+                            null
+                        );
+                    }
+
+                    throw new ApiException('[0] Unknown API error', 0, null, null);
                 }
             );
     }
@@ -1655,7 +2144,7 @@ class SendingAccountsApi
     /**
      * Create request for operation 'managementDeleteProvider'
      *
-     * @param  string $public_id (required)
+     * @param  string $public_id public_id (required)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementDeleteProvider'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -1767,7 +2256,11 @@ class SendingAccountsApi
         ?string $if_none_match = null,
         string $contentType = self::contentTypes['managementGetProvider'][0]
     ): \Sendmux\Management\Model\ProviderItemResponse|\Sendmux\Management\Model\ApiError|null {
-        list($response) = $this->managementGetProviderWithHttpInfo($public_id, $if_none_match, $contentType);
+        list($response) = $this->managementGetProviderWithHttpInfo(
+            $public_id,
+            $if_none_match,
+            $contentType
+        );
         return $response;
     }
 
@@ -1776,8 +2269,8 @@ class SendingAccountsApi
      *
      * Get a sending account
      *
-     * @param  string $public_id (required)
-     * @param  string|null $if_none_match (optional)
+     * @param  string $public_id public_id (required)
+     * @param  string|null $if_none_match if_none_match (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementGetProvider'] to see the possible values for this operation
      *
      * @throws ApiException on non-2xx response or if the response body is not in the expected format
@@ -1789,7 +2282,11 @@ class SendingAccountsApi
         ?string $if_none_match = null,
         string $contentType = self::contentTypes['managementGetProvider'][0]
     ): array {
-        $request = $this->managementGetProviderRequest($public_id, $if_none_match, $contentType);
+        $request = $this->managementGetProviderRequest(
+            $public_id,
+            $if_none_match,
+            $contentType
+        );
 
         try {
             $options = $this->createHttpClientOption();
@@ -1820,6 +2317,8 @@ class SendingAccountsApi
                         $request,
                         $response,
                     );
+                case 304:
+                    return [null, $response->getStatusCode(), $response->getHeaders()];
                 case 404:
                     return $this->handleResponseWithDataType(
                         '\Sendmux\Management\Model\ApiError',
@@ -1876,8 +2375,8 @@ class SendingAccountsApi
      *
      * Get a sending account
      *
-     * @param  string $public_id (required)
-     * @param  string|null $if_none_match (optional)
+     * @param  string $public_id public_id (required)
+     * @param  string|null $if_none_match if_none_match (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementGetProvider'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -1888,7 +2387,11 @@ class SendingAccountsApi
         ?string $if_none_match = null,
         string $contentType = self::contentTypes['managementGetProvider'][0]
     ): PromiseInterface {
-        return $this->managementGetProviderAsyncWithHttpInfo($public_id, $if_none_match, $contentType)
+        return $this->managementGetProviderAsyncWithHttpInfo(
+            $public_id,
+            $if_none_match,
+            $contentType
+        )
             ->then(
                 function ($response) {
                     return $response[0];
@@ -1901,8 +2404,8 @@ class SendingAccountsApi
      *
      * Get a sending account
      *
-     * @param  string $public_id (required)
-     * @param  string|null $if_none_match (optional)
+     * @param  string $public_id public_id (required)
+     * @param  string|null $if_none_match if_none_match (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementGetProvider'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -1914,12 +2417,20 @@ class SendingAccountsApi
         string $contentType = self::contentTypes['managementGetProvider'][0]
     ): PromiseInterface {
         $returnType = '\Sendmux\Management\Model\ProviderItemResponse';
-        $request = $this->managementGetProviderRequest($public_id, $if_none_match, $contentType);
+        $request = $this->managementGetProviderRequest(
+            $public_id,
+            $if_none_match,
+            $contentType
+        );
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
             ->then(
                 function ($response) use ($returnType) {
+                    if ($response->getStatusCode() === 304) {
+                        return [null, $response->getStatusCode(), $response->getHeaders()];
+                    }
+
                     if (in_array($returnType, ['\SplFileObject', '\Psr\Http\Message\StreamInterface'])) {
                         $content = $response->getBody(); //stream goes to serializer
                     } else {
@@ -1936,18 +2447,34 @@ class SendingAccountsApi
                     ];
                 },
                 function ($exception) {
-                    $response = $exception->getResponse();
-                    $statusCode = $response->getStatusCode();
-                    throw new ApiException(
-                        sprintf(
-                            '[%d] Error connecting to the API (%s)',
-                            $statusCode,
-                            $exception->getRequest()->getUri()
-                        ),
-                        $statusCode,
-                        $response->getHeaders(),
-                        (string) $response->getBody()
-                    );
+                    if ($exception instanceof RequestException) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            $exception->getResponse() ? $exception->getResponse()->getHeaders() : null,
+                            $exception->getResponse() ? (string) $exception->getResponse()->getBody() : null
+                        );
+                    }
+
+                    if ($exception instanceof ConnectException) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            null,
+                            null
+                        );
+                    }
+
+                    if ($exception instanceof \Throwable) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            null,
+                            null
+                        );
+                    }
+
+                    throw new ApiException('[0] Unknown API error', 0, null, null);
                 }
             );
     }
@@ -1955,8 +2482,8 @@ class SendingAccountsApi
     /**
      * Create request for operation 'managementGetProvider'
      *
-     * @param  string $public_id (required)
-     * @param  string|null $if_none_match (optional)
+     * @param  string $public_id public_id (required)
+     * @param  string|null $if_none_match if_none_match (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementGetProvider'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -2070,7 +2597,9 @@ class SendingAccountsApi
     public function managementGetProviderLimits(
         string $contentType = self::contentTypes['managementGetProviderLimits'][0]
     ): \Sendmux\Management\Model\ProviderLimitsResponse {
-        list($response) = $this->managementGetProviderLimitsWithHttpInfo($contentType);
+        list($response) = $this->managementGetProviderLimitsWithHttpInfo(
+            $contentType
+        );
         return $response;
     }
 
@@ -2088,7 +2617,9 @@ class SendingAccountsApi
     public function managementGetProviderLimitsWithHttpInfo(
         string $contentType = self::contentTypes['managementGetProviderLimits'][0]
     ): array {
-        $request = $this->managementGetProviderLimitsRequest($contentType);
+        $request = $this->managementGetProviderLimitsRequest(
+            $contentType
+        );
 
         try {
             $options = $this->createHttpClientOption();
@@ -2169,7 +2700,9 @@ class SendingAccountsApi
     public function managementGetProviderLimitsAsync(
         string $contentType = self::contentTypes['managementGetProviderLimits'][0]
     ): PromiseInterface {
-        return $this->managementGetProviderLimitsAsyncWithHttpInfo($contentType)
+        return $this->managementGetProviderLimitsAsyncWithHttpInfo(
+            $contentType
+        )
             ->then(
                 function ($response) {
                     return $response[0];
@@ -2191,7 +2724,9 @@ class SendingAccountsApi
         string $contentType = self::contentTypes['managementGetProviderLimits'][0]
     ): PromiseInterface {
         $returnType = '\Sendmux\Management\Model\ProviderLimitsResponse';
-        $request = $this->managementGetProviderLimitsRequest($contentType);
+        $request = $this->managementGetProviderLimitsRequest(
+            $contentType
+        );
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -2213,18 +2748,34 @@ class SendingAccountsApi
                     ];
                 },
                 function ($exception) {
-                    $response = $exception->getResponse();
-                    $statusCode = $response->getStatusCode();
-                    throw new ApiException(
-                        sprintf(
-                            '[%d] Error connecting to the API (%s)',
-                            $statusCode,
-                            $exception->getRequest()->getUri()
-                        ),
-                        $statusCode,
-                        $response->getHeaders(),
-                        (string) $response->getBody()
-                    );
+                    if ($exception instanceof RequestException) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            $exception->getResponse() ? $exception->getResponse()->getHeaders() : null,
+                            $exception->getResponse() ? (string) $exception->getResponse()->getBody() : null
+                        );
+                    }
+
+                    if ($exception instanceof ConnectException) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            null,
+                            null
+                        );
+                    }
+
+                    if ($exception instanceof \Throwable) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            null,
+                            null
+                        );
+                    }
+
+                    throw new ApiException('[0] Unknown API error', 0, null, null);
                 }
             );
     }
@@ -2323,7 +2874,9 @@ class SendingAccountsApi
     public function managementGetProviderStats(
         string $contentType = self::contentTypes['managementGetProviderStats'][0]
     ): \Sendmux\Management\Model\ProviderStatsResponse|\Sendmux\Management\Model\ApiError {
-        list($response) = $this->managementGetProviderStatsWithHttpInfo($contentType);
+        list($response) = $this->managementGetProviderStatsWithHttpInfo(
+            $contentType
+        );
         return $response;
     }
 
@@ -2341,7 +2894,9 @@ class SendingAccountsApi
     public function managementGetProviderStatsWithHttpInfo(
         string $contentType = self::contentTypes['managementGetProviderStats'][0]
     ): array {
-        $request = $this->managementGetProviderStatsRequest($contentType);
+        $request = $this->managementGetProviderStatsRequest(
+            $contentType
+        );
 
         try {
             $options = $this->createHttpClientOption();
@@ -2450,7 +3005,9 @@ class SendingAccountsApi
     public function managementGetProviderStatsAsync(
         string $contentType = self::contentTypes['managementGetProviderStats'][0]
     ): PromiseInterface {
-        return $this->managementGetProviderStatsAsyncWithHttpInfo($contentType)
+        return $this->managementGetProviderStatsAsyncWithHttpInfo(
+            $contentType
+        )
             ->then(
                 function ($response) {
                     return $response[0];
@@ -2472,7 +3029,9 @@ class SendingAccountsApi
         string $contentType = self::contentTypes['managementGetProviderStats'][0]
     ): PromiseInterface {
         $returnType = '\Sendmux\Management\Model\ProviderStatsResponse';
-        $request = $this->managementGetProviderStatsRequest($contentType);
+        $request = $this->managementGetProviderStatsRequest(
+            $contentType
+        );
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -2494,18 +3053,34 @@ class SendingAccountsApi
                     ];
                 },
                 function ($exception) {
-                    $response = $exception->getResponse();
-                    $statusCode = $response->getStatusCode();
-                    throw new ApiException(
-                        sprintf(
-                            '[%d] Error connecting to the API (%s)',
-                            $statusCode,
-                            $exception->getRequest()->getUri()
-                        ),
-                        $statusCode,
-                        $response->getHeaders(),
-                        (string) $response->getBody()
-                    );
+                    if ($exception instanceof RequestException) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            $exception->getResponse() ? $exception->getResponse()->getHeaders() : null,
+                            $exception->getResponse() ? (string) $exception->getResponse()->getBody() : null
+                        );
+                    }
+
+                    if ($exception instanceof ConnectException) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            null,
+                            null
+                        );
+                    }
+
+                    if ($exception instanceof \Throwable) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            null,
+                            null
+                        );
+                    }
+
+                    throw new ApiException('[0] Unknown API error', 0, null, null);
                 }
             );
     }
@@ -2604,7 +3179,9 @@ class SendingAccountsApi
     public function managementGetProviderUsage(
         string $contentType = self::contentTypes['managementGetProviderUsage'][0]
     ): \Sendmux\Management\Model\ProviderUsageResponse {
-        list($response) = $this->managementGetProviderUsageWithHttpInfo($contentType);
+        list($response) = $this->managementGetProviderUsageWithHttpInfo(
+            $contentType
+        );
         return $response;
     }
 
@@ -2622,7 +3199,9 @@ class SendingAccountsApi
     public function managementGetProviderUsageWithHttpInfo(
         string $contentType = self::contentTypes['managementGetProviderUsage'][0]
     ): array {
-        $request = $this->managementGetProviderUsageRequest($contentType);
+        $request = $this->managementGetProviderUsageRequest(
+            $contentType
+        );
 
         try {
             $options = $this->createHttpClientOption();
@@ -2703,7 +3282,9 @@ class SendingAccountsApi
     public function managementGetProviderUsageAsync(
         string $contentType = self::contentTypes['managementGetProviderUsage'][0]
     ): PromiseInterface {
-        return $this->managementGetProviderUsageAsyncWithHttpInfo($contentType)
+        return $this->managementGetProviderUsageAsyncWithHttpInfo(
+            $contentType
+        )
             ->then(
                 function ($response) {
                     return $response[0];
@@ -2725,7 +3306,9 @@ class SendingAccountsApi
         string $contentType = self::contentTypes['managementGetProviderUsage'][0]
     ): PromiseInterface {
         $returnType = '\Sendmux\Management\Model\ProviderUsageResponse';
-        $request = $this->managementGetProviderUsageRequest($contentType);
+        $request = $this->managementGetProviderUsageRequest(
+            $contentType
+        );
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -2747,18 +3330,34 @@ class SendingAccountsApi
                     ];
                 },
                 function ($exception) {
-                    $response = $exception->getResponse();
-                    $statusCode = $response->getStatusCode();
-                    throw new ApiException(
-                        sprintf(
-                            '[%d] Error connecting to the API (%s)',
-                            $statusCode,
-                            $exception->getRequest()->getUri()
-                        ),
-                        $statusCode,
-                        $response->getHeaders(),
-                        (string) $response->getBody()
-                    );
+                    if ($exception instanceof RequestException) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            $exception->getResponse() ? $exception->getResponse()->getHeaders() : null,
+                            $exception->getResponse() ? (string) $exception->getResponse()->getBody() : null
+                        );
+                    }
+
+                    if ($exception instanceof ConnectException) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            null,
+                            null
+                        );
+                    }
+
+                    if ($exception instanceof \Throwable) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            null,
+                            null
+                        );
+                    }
+
+                    throw new ApiException('[0] Unknown API error', 0, null, null);
                 }
             );
     }
@@ -2857,7 +3456,9 @@ class SendingAccountsApi
     public function managementGetSharedAmazonSesLimitRequest(
         string $contentType = self::contentTypes['managementGetSharedAmazonSesLimitRequest'][0]
     ): \Sendmux\Management\Model\SharedAmazonSesLimitRequestPageResponse {
-        list($response) = $this->managementGetSharedAmazonSesLimitRequestWithHttpInfo($contentType);
+        list($response) = $this->managementGetSharedAmazonSesLimitRequestWithHttpInfo(
+            $contentType
+        );
         return $response;
     }
 
@@ -2875,7 +3476,9 @@ class SendingAccountsApi
     public function managementGetSharedAmazonSesLimitRequestWithHttpInfo(
         string $contentType = self::contentTypes['managementGetSharedAmazonSesLimitRequest'][0]
     ): array {
-        $request = $this->managementGetSharedAmazonSesLimitRequestRequest($contentType);
+        $request = $this->managementGetSharedAmazonSesLimitRequestRequest(
+            $contentType
+        );
 
         try {
             $options = $this->createHttpClientOption();
@@ -2956,7 +3559,9 @@ class SendingAccountsApi
     public function managementGetSharedAmazonSesLimitRequestAsync(
         string $contentType = self::contentTypes['managementGetSharedAmazonSesLimitRequest'][0]
     ): PromiseInterface {
-        return $this->managementGetSharedAmazonSesLimitRequestAsyncWithHttpInfo($contentType)
+        return $this->managementGetSharedAmazonSesLimitRequestAsyncWithHttpInfo(
+            $contentType
+        )
             ->then(
                 function ($response) {
                     return $response[0];
@@ -2978,7 +3583,9 @@ class SendingAccountsApi
         string $contentType = self::contentTypes['managementGetSharedAmazonSesLimitRequest'][0]
     ): PromiseInterface {
         $returnType = '\Sendmux\Management\Model\SharedAmazonSesLimitRequestPageResponse';
-        $request = $this->managementGetSharedAmazonSesLimitRequestRequest($contentType);
+        $request = $this->managementGetSharedAmazonSesLimitRequestRequest(
+            $contentType
+        );
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -3000,18 +3607,34 @@ class SendingAccountsApi
                     ];
                 },
                 function ($exception) {
-                    $response = $exception->getResponse();
-                    $statusCode = $response->getStatusCode();
-                    throw new ApiException(
-                        sprintf(
-                            '[%d] Error connecting to the API (%s)',
-                            $statusCode,
-                            $exception->getRequest()->getUri()
-                        ),
-                        $statusCode,
-                        $response->getHeaders(),
-                        (string) $response->getBody()
-                    );
+                    if ($exception instanceof RequestException) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            $exception->getResponse() ? $exception->getResponse()->getHeaders() : null,
+                            $exception->getResponse() ? (string) $exception->getResponse()->getBody() : null
+                        );
+                    }
+
+                    if ($exception instanceof ConnectException) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            null,
+                            null
+                        );
+                    }
+
+                    if ($exception instanceof \Throwable) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            null,
+                            null
+                        );
+                    }
+
+                    throw new ApiException('[0] Unknown API error', 0, null, null);
                 }
             );
     }
@@ -3118,7 +3741,13 @@ class SendingAccountsApi
         ?int $limit = null,
         string $contentType = self::contentTypes['managementListProviders'][0]
     ): \Sendmux\Management\Model\ProviderItemCursorListResponse|\Sendmux\Management\Model\ApiError {
-        list($response) = $this->managementListProvidersWithHttpInfo($cursor, $status, $type, $limit, $contentType);
+        list($response) = $this->managementListProvidersWithHttpInfo(
+            $cursor,
+            $status,
+            $type,
+            $limit,
+            $contentType
+        );
         return $response;
     }
 
@@ -3127,10 +3756,10 @@ class SendingAccountsApi
      *
      * List sending accounts
      *
-     * @param  string|null $cursor (optional)
-     * @param  string|null $status (optional)
-     * @param  string|null $type (optional)
-     * @param  int|null $limit (optional)
+     * @param  string|null $cursor cursor (optional)
+     * @param  string|null $status status (optional)
+     * @param  string|null $type type (optional)
+     * @param  int|null $limit limit (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementListProviders'] to see the possible values for this operation
      *
      * @throws ApiException on non-2xx response or if the response body is not in the expected format
@@ -3144,7 +3773,13 @@ class SendingAccountsApi
         ?int $limit = null,
         string $contentType = self::contentTypes['managementListProviders'][0]
     ): array {
-        $request = $this->managementListProvidersRequest($cursor, $status, $type, $limit, $contentType);
+        $request = $this->managementListProvidersRequest(
+            $cursor,
+            $status,
+            $type,
+            $limit,
+            $contentType
+        );
 
         try {
             $options = $this->createHttpClientOption();
@@ -3245,10 +3880,10 @@ class SendingAccountsApi
      *
      * List sending accounts
      *
-     * @param  string|null $cursor (optional)
-     * @param  string|null $status (optional)
-     * @param  string|null $type (optional)
-     * @param  int|null $limit (optional)
+     * @param  string|null $cursor cursor (optional)
+     * @param  string|null $status status (optional)
+     * @param  string|null $type type (optional)
+     * @param  int|null $limit limit (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementListProviders'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -3261,7 +3896,13 @@ class SendingAccountsApi
         ?int $limit = null,
         string $contentType = self::contentTypes['managementListProviders'][0]
     ): PromiseInterface {
-        return $this->managementListProvidersAsyncWithHttpInfo($cursor, $status, $type, $limit, $contentType)
+        return $this->managementListProvidersAsyncWithHttpInfo(
+            $cursor,
+            $status,
+            $type,
+            $limit,
+            $contentType
+        )
             ->then(
                 function ($response) {
                     return $response[0];
@@ -3274,10 +3915,10 @@ class SendingAccountsApi
      *
      * List sending accounts
      *
-     * @param  string|null $cursor (optional)
-     * @param  string|null $status (optional)
-     * @param  string|null $type (optional)
-     * @param  int|null $limit (optional)
+     * @param  string|null $cursor cursor (optional)
+     * @param  string|null $status status (optional)
+     * @param  string|null $type type (optional)
+     * @param  int|null $limit limit (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementListProviders'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -3291,7 +3932,13 @@ class SendingAccountsApi
         string $contentType = self::contentTypes['managementListProviders'][0]
     ): PromiseInterface {
         $returnType = '\Sendmux\Management\Model\ProviderItemCursorListResponse';
-        $request = $this->managementListProvidersRequest($cursor, $status, $type, $limit, $contentType);
+        $request = $this->managementListProvidersRequest(
+            $cursor,
+            $status,
+            $type,
+            $limit,
+            $contentType
+        );
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -3313,18 +3960,34 @@ class SendingAccountsApi
                     ];
                 },
                 function ($exception) {
-                    $response = $exception->getResponse();
-                    $statusCode = $response->getStatusCode();
-                    throw new ApiException(
-                        sprintf(
-                            '[%d] Error connecting to the API (%s)',
-                            $statusCode,
-                            $exception->getRequest()->getUri()
-                        ),
-                        $statusCode,
-                        $response->getHeaders(),
-                        (string) $response->getBody()
-                    );
+                    if ($exception instanceof RequestException) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            $exception->getResponse() ? $exception->getResponse()->getHeaders() : null,
+                            $exception->getResponse() ? (string) $exception->getResponse()->getBody() : null
+                        );
+                    }
+
+                    if ($exception instanceof ConnectException) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            null,
+                            null
+                        );
+                    }
+
+                    if ($exception instanceof \Throwable) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            null,
+                            null
+                        );
+                    }
+
+                    throw new ApiException('[0] Unknown API error', 0, null, null);
                 }
             );
     }
@@ -3332,10 +3995,10 @@ class SendingAccountsApi
     /**
      * Create request for operation 'managementListProviders'
      *
-     * @param  string|null $cursor (optional)
-     * @param  string|null $status (optional)
-     * @param  string|null $type (optional)
-     * @param  int|null $limit (optional)
+     * @param  string|null $cursor cursor (optional)
+     * @param  string|null $status status (optional)
+     * @param  string|null $type type (optional)
+     * @param  int|null $limit limit (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementListProviders'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -3479,7 +4142,10 @@ class SendingAccountsApi
         ?string $idempotency_key = null,
         string $contentType = self::contentTypes['managementRequestSendingAccountLimitIncrease'][0]
     ): \Sendmux\Management\Model\SendingAccountLimitRequestResponse|\Sendmux\Management\Model\ApiError {
-        list($response) = $this->managementRequestSendingAccountLimitIncreaseWithHttpInfo($idempotency_key, $contentType);
+        list($response) = $this->managementRequestSendingAccountLimitIncreaseWithHttpInfo(
+            $idempotency_key,
+            $contentType
+        );
         return $response;
     }
 
@@ -3488,7 +4154,7 @@ class SendingAccountsApi
      *
      * Request a sending account limit increase
      *
-     * @param  string|null $idempotency_key (optional)
+     * @param  string|null $idempotency_key idempotency_key (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementRequestSendingAccountLimitIncrease'] to see the possible values for this operation
      *
      * @throws ApiException on non-2xx response or if the response body is not in the expected format
@@ -3499,7 +4165,10 @@ class SendingAccountsApi
         ?string $idempotency_key = null,
         string $contentType = self::contentTypes['managementRequestSendingAccountLimitIncrease'][0]
     ): array {
-        $request = $this->managementRequestSendingAccountLimitIncreaseRequest($idempotency_key, $contentType);
+        $request = $this->managementRequestSendingAccountLimitIncreaseRequest(
+            $idempotency_key,
+            $contentType
+        );
 
         try {
             $options = $this->createHttpClientOption();
@@ -3600,7 +4269,7 @@ class SendingAccountsApi
      *
      * Request a sending account limit increase
      *
-     * @param  string|null $idempotency_key (optional)
+     * @param  string|null $idempotency_key idempotency_key (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementRequestSendingAccountLimitIncrease'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -3610,7 +4279,10 @@ class SendingAccountsApi
         ?string $idempotency_key = null,
         string $contentType = self::contentTypes['managementRequestSendingAccountLimitIncrease'][0]
     ): PromiseInterface {
-        return $this->managementRequestSendingAccountLimitIncreaseAsyncWithHttpInfo($idempotency_key, $contentType)
+        return $this->managementRequestSendingAccountLimitIncreaseAsyncWithHttpInfo(
+            $idempotency_key,
+            $contentType
+        )
             ->then(
                 function ($response) {
                     return $response[0];
@@ -3623,7 +4295,7 @@ class SendingAccountsApi
      *
      * Request a sending account limit increase
      *
-     * @param  string|null $idempotency_key (optional)
+     * @param  string|null $idempotency_key idempotency_key (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementRequestSendingAccountLimitIncrease'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -3634,7 +4306,10 @@ class SendingAccountsApi
         string $contentType = self::contentTypes['managementRequestSendingAccountLimitIncrease'][0]
     ): PromiseInterface {
         $returnType = '\Sendmux\Management\Model\SendingAccountLimitRequestResponse';
-        $request = $this->managementRequestSendingAccountLimitIncreaseRequest($idempotency_key, $contentType);
+        $request = $this->managementRequestSendingAccountLimitIncreaseRequest(
+            $idempotency_key,
+            $contentType
+        );
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -3656,18 +4331,34 @@ class SendingAccountsApi
                     ];
                 },
                 function ($exception) {
-                    $response = $exception->getResponse();
-                    $statusCode = $response->getStatusCode();
-                    throw new ApiException(
-                        sprintf(
-                            '[%d] Error connecting to the API (%s)',
-                            $statusCode,
-                            $exception->getRequest()->getUri()
-                        ),
-                        $statusCode,
-                        $response->getHeaders(),
-                        (string) $response->getBody()
-                    );
+                    if ($exception instanceof RequestException) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            $exception->getResponse() ? $exception->getResponse()->getHeaders() : null,
+                            $exception->getResponse() ? (string) $exception->getResponse()->getBody() : null
+                        );
+                    }
+
+                    if ($exception instanceof ConnectException) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            null,
+                            null
+                        );
+                    }
+
+                    if ($exception instanceof \Throwable) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            null,
+                            null
+                        );
+                    }
+
+                    throw new ApiException('[0] Unknown API error', 0, null, null);
                 }
             );
     }
@@ -3675,7 +4366,7 @@ class SendingAccountsApi
     /**
      * Create request for operation 'managementRequestSendingAccountLimitIncrease'
      *
-     * @param  string|null $idempotency_key (optional)
+     * @param  string|null $idempotency_key idempotency_key (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementRequestSendingAccountLimitIncrease'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -3780,7 +4471,11 @@ class SendingAccountsApi
         ?string $idempotency_key = null,
         string $contentType = self::contentTypes['managementTestProvider'][0]
     ): \Sendmux\Management\Model\ProviderTestResultResponse|\Sendmux\Management\Model\ApiError {
-        list($response) = $this->managementTestProviderWithHttpInfo($public_id, $idempotency_key, $contentType);
+        list($response) = $this->managementTestProviderWithHttpInfo(
+            $public_id,
+            $idempotency_key,
+            $contentType
+        );
         return $response;
     }
 
@@ -3789,8 +4484,8 @@ class SendingAccountsApi
      *
      * Test an SMTP sending account
      *
-     * @param  string $public_id (required)
-     * @param  string|null $idempotency_key (optional)
+     * @param  string $public_id public_id (required)
+     * @param  string|null $idempotency_key idempotency_key (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementTestProvider'] to see the possible values for this operation
      *
      * @throws ApiException on non-2xx response or if the response body is not in the expected format
@@ -3802,7 +4497,11 @@ class SendingAccountsApi
         ?string $idempotency_key = null,
         string $contentType = self::contentTypes['managementTestProvider'][0]
     ): array {
-        $request = $this->managementTestProviderRequest($public_id, $idempotency_key, $contentType);
+        $request = $this->managementTestProviderRequest(
+            $public_id,
+            $idempotency_key,
+            $contentType
+        );
 
         try {
             $options = $this->createHttpClientOption();
@@ -3917,8 +4616,8 @@ class SendingAccountsApi
      *
      * Test an SMTP sending account
      *
-     * @param  string $public_id (required)
-     * @param  string|null $idempotency_key (optional)
+     * @param  string $public_id public_id (required)
+     * @param  string|null $idempotency_key idempotency_key (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementTestProvider'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -3929,7 +4628,11 @@ class SendingAccountsApi
         ?string $idempotency_key = null,
         string $contentType = self::contentTypes['managementTestProvider'][0]
     ): PromiseInterface {
-        return $this->managementTestProviderAsyncWithHttpInfo($public_id, $idempotency_key, $contentType)
+        return $this->managementTestProviderAsyncWithHttpInfo(
+            $public_id,
+            $idempotency_key,
+            $contentType
+        )
             ->then(
                 function ($response) {
                     return $response[0];
@@ -3942,8 +4645,8 @@ class SendingAccountsApi
      *
      * Test an SMTP sending account
      *
-     * @param  string $public_id (required)
-     * @param  string|null $idempotency_key (optional)
+     * @param  string $public_id public_id (required)
+     * @param  string|null $idempotency_key idempotency_key (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementTestProvider'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -3955,7 +4658,11 @@ class SendingAccountsApi
         string $contentType = self::contentTypes['managementTestProvider'][0]
     ): PromiseInterface {
         $returnType = '\Sendmux\Management\Model\ProviderTestResultResponse';
-        $request = $this->managementTestProviderRequest($public_id, $idempotency_key, $contentType);
+        $request = $this->managementTestProviderRequest(
+            $public_id,
+            $idempotency_key,
+            $contentType
+        );
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -3977,18 +4684,34 @@ class SendingAccountsApi
                     ];
                 },
                 function ($exception) {
-                    $response = $exception->getResponse();
-                    $statusCode = $response->getStatusCode();
-                    throw new ApiException(
-                        sprintf(
-                            '[%d] Error connecting to the API (%s)',
-                            $statusCode,
-                            $exception->getRequest()->getUri()
-                        ),
-                        $statusCode,
-                        $response->getHeaders(),
-                        (string) $response->getBody()
-                    );
+                    if ($exception instanceof RequestException) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            $exception->getResponse() ? $exception->getResponse()->getHeaders() : null,
+                            $exception->getResponse() ? (string) $exception->getResponse()->getBody() : null
+                        );
+                    }
+
+                    if ($exception instanceof ConnectException) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            null,
+                            null
+                        );
+                    }
+
+                    if ($exception instanceof \Throwable) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            null,
+                            null
+                        );
+                    }
+
+                    throw new ApiException('[0] Unknown API error', 0, null, null);
                 }
             );
     }
@@ -3996,8 +4719,8 @@ class SendingAccountsApi
     /**
      * Create request for operation 'managementTestProvider'
      *
-     * @param  string $public_id (required)
-     * @param  string|null $idempotency_key (optional)
+     * @param  string $public_id public_id (required)
+     * @param  string|null $idempotency_key idempotency_key (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementTestProvider'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -4120,7 +4843,12 @@ class SendingAccountsApi
         ?\Sendmux\Management\Model\ProviderUpdateBody $provider_update_body = null,
         string $contentType = self::contentTypes['managementUpdateProvider'][0]
     ): \Sendmux\Management\Model\ProviderItemResponse|\Sendmux\Management\Model\ApiError {
-        list($response) = $this->managementUpdateProviderWithHttpInfo($public_id, $if_match, $provider_update_body, $contentType);
+        list($response) = $this->managementUpdateProviderWithHttpInfo(
+            $public_id,
+            $if_match,
+            $provider_update_body,
+            $contentType
+        );
         return $response;
     }
 
@@ -4129,9 +4857,9 @@ class SendingAccountsApi
      *
      * Update a sending account
      *
-     * @param  string $public_id (required)
-     * @param  string|null $if_match (optional)
-     * @param  \Sendmux\Management\Model\ProviderUpdateBody|null $provider_update_body (optional)
+     * @param  string $public_id public_id (required)
+     * @param  string|null $if_match if_match (optional)
+     * @param  \Sendmux\Management\Model\ProviderUpdateBody|null $provider_update_body provider_update_body (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementUpdateProvider'] to see the possible values for this operation
      *
      * @throws ApiException on non-2xx response or if the response body is not in the expected format
@@ -4144,7 +4872,12 @@ class SendingAccountsApi
         ?\Sendmux\Management\Model\ProviderUpdateBody $provider_update_body = null,
         string $contentType = self::contentTypes['managementUpdateProvider'][0]
     ): array {
-        $request = $this->managementUpdateProviderRequest($public_id, $if_match, $provider_update_body, $contentType);
+        $request = $this->managementUpdateProviderRequest(
+            $public_id,
+            $if_match,
+            $provider_update_body,
+            $contentType
+        );
 
         try {
             $options = $this->createHttpClientOption();
@@ -4273,9 +5006,9 @@ class SendingAccountsApi
      *
      * Update a sending account
      *
-     * @param  string $public_id (required)
-     * @param  string|null $if_match (optional)
-     * @param  \Sendmux\Management\Model\ProviderUpdateBody|null $provider_update_body (optional)
+     * @param  string $public_id public_id (required)
+     * @param  string|null $if_match if_match (optional)
+     * @param  \Sendmux\Management\Model\ProviderUpdateBody|null $provider_update_body provider_update_body (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementUpdateProvider'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -4287,7 +5020,12 @@ class SendingAccountsApi
         ?\Sendmux\Management\Model\ProviderUpdateBody $provider_update_body = null,
         string $contentType = self::contentTypes['managementUpdateProvider'][0]
     ): PromiseInterface {
-        return $this->managementUpdateProviderAsyncWithHttpInfo($public_id, $if_match, $provider_update_body, $contentType)
+        return $this->managementUpdateProviderAsyncWithHttpInfo(
+            $public_id,
+            $if_match,
+            $provider_update_body,
+            $contentType
+        )
             ->then(
                 function ($response) {
                     return $response[0];
@@ -4300,9 +5038,9 @@ class SendingAccountsApi
      *
      * Update a sending account
      *
-     * @param  string $public_id (required)
-     * @param  string|null $if_match (optional)
-     * @param  \Sendmux\Management\Model\ProviderUpdateBody|null $provider_update_body (optional)
+     * @param  string $public_id public_id (required)
+     * @param  string|null $if_match if_match (optional)
+     * @param  \Sendmux\Management\Model\ProviderUpdateBody|null $provider_update_body provider_update_body (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementUpdateProvider'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -4315,7 +5053,12 @@ class SendingAccountsApi
         string $contentType = self::contentTypes['managementUpdateProvider'][0]
     ): PromiseInterface {
         $returnType = '\Sendmux\Management\Model\ProviderItemResponse';
-        $request = $this->managementUpdateProviderRequest($public_id, $if_match, $provider_update_body, $contentType);
+        $request = $this->managementUpdateProviderRequest(
+            $public_id,
+            $if_match,
+            $provider_update_body,
+            $contentType
+        );
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -4337,18 +5080,34 @@ class SendingAccountsApi
                     ];
                 },
                 function ($exception) {
-                    $response = $exception->getResponse();
-                    $statusCode = $response->getStatusCode();
-                    throw new ApiException(
-                        sprintf(
-                            '[%d] Error connecting to the API (%s)',
-                            $statusCode,
-                            $exception->getRequest()->getUri()
-                        ),
-                        $statusCode,
-                        $response->getHeaders(),
-                        (string) $response->getBody()
-                    );
+                    if ($exception instanceof RequestException) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            $exception->getResponse() ? $exception->getResponse()->getHeaders() : null,
+                            $exception->getResponse() ? (string) $exception->getResponse()->getBody() : null
+                        );
+                    }
+
+                    if ($exception instanceof ConnectException) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            null,
+                            null
+                        );
+                    }
+
+                    if ($exception instanceof \Throwable) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            null,
+                            null
+                        );
+                    }
+
+                    throw new ApiException('[0] Unknown API error', 0, null, null);
                 }
             );
     }
@@ -4356,9 +5115,9 @@ class SendingAccountsApi
     /**
      * Create request for operation 'managementUpdateProvider'
      *
-     * @param  string $public_id (required)
-     * @param  string|null $if_match (optional)
-     * @param  \Sendmux\Management\Model\ProviderUpdateBody|null $provider_update_body (optional)
+     * @param  string $public_id public_id (required)
+     * @param  string|null $if_match if_match (optional)
+     * @param  \Sendmux\Management\Model\ProviderUpdateBody|null $provider_update_body provider_update_body (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementUpdateProvider'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException

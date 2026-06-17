@@ -1,7 +1,7 @@
 <?php
 
 /**
- * MailboxDomainNameValueRecord
+ * SharedAmazonSesLimitRequestCancelResponse
  *
  * PHP version 8.1
  *
@@ -35,15 +35,14 @@ use ReturnTypeWillChange;
 use Sendmux\Management\ObjectSerializer;
 
 /**
- * MailboxDomainNameValueRecord Class Doc Comment
+ * SharedAmazonSesLimitRequestCancelResponse Class Doc Comment
  *
- * @description SPF TXT record covering Amazon SES sending
  * @package  Sendmux\Management
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  * @implements ArrayAccess<string, mixed>
  */
-class MailboxDomainNameValueRecord implements ModelInterface, ArrayAccess, JsonSerializable
+class SharedAmazonSesLimitRequestCancelResponse implements ModelInterface, ArrayAccess, JsonSerializable
 {
     public const DISCRIMINATOR = null;
 
@@ -52,7 +51,7 @@ class MailboxDomainNameValueRecord implements ModelInterface, ArrayAccess, JsonS
      *
      * @var string
      */
-    protected static string $openAPIModelName = 'MailboxDomainNameValueRecord';
+    protected static string $openAPIModelName = 'SharedAmazonSesLimitRequestCancelResponse';
 
     /**
      * Array of property to type mappings. Used for (de)serialization
@@ -60,8 +59,9 @@ class MailboxDomainNameValueRecord implements ModelInterface, ArrayAccess, JsonS
      * @var array<string, string>
      */
     protected static array $openAPITypes = [
-        'name' => 'string',
-        'value' => 'string'
+        'meta' => '\Sendmux\Management\Model\ResponseMeta',
+        'ok' => 'bool',
+        'data' => '\Sendmux\Management\Model\SharedAmazonSesLimitRequestCancel'
     ];
 
     /**
@@ -70,8 +70,9 @@ class MailboxDomainNameValueRecord implements ModelInterface, ArrayAccess, JsonS
      * @var array<string, string|null>
      */
     protected static array $openAPIFormats = [
-        'name' => null,
-        'value' => null
+        'meta' => null,
+        'ok' => null,
+        'data' => null
     ];
 
     /**
@@ -80,8 +81,9 @@ class MailboxDomainNameValueRecord implements ModelInterface, ArrayAccess, JsonS
      * @var array<string, bool>
      */
     protected static array $openAPINullables = [
-        'name' => false,
-        'value' => false
+        'meta' => false,
+        'ok' => false,
+        'data' => false
     ];
 
     /**
@@ -160,8 +162,9 @@ class MailboxDomainNameValueRecord implements ModelInterface, ArrayAccess, JsonS
      * @var array<string, string>
      */
     protected static array $attributeMap = [
-        'name' => 'name',
-        'value' => 'value'
+        'meta' => 'meta',
+        'ok' => 'ok',
+        'data' => 'data'
     ];
 
     /**
@@ -170,8 +173,9 @@ class MailboxDomainNameValueRecord implements ModelInterface, ArrayAccess, JsonS
      * @var array<string, string>
      */
     protected static array $setters = [
-        'name' => 'setName',
-        'value' => 'setValue'
+        'meta' => 'setMeta',
+        'ok' => 'setOk',
+        'data' => 'setData'
     ];
 
     /**
@@ -180,8 +184,9 @@ class MailboxDomainNameValueRecord implements ModelInterface, ArrayAccess, JsonS
      * @var array<string, string>
      */
     protected static array $getters = [
-        'name' => 'getName',
-        'value' => 'getValue'
+        'meta' => 'getMeta',
+        'ok' => 'getOk',
+        'data' => 'getData'
     ];
 
     /**
@@ -231,8 +236,9 @@ class MailboxDomainNameValueRecord implements ModelInterface, ArrayAccess, JsonS
      */
     public function __construct(?array $data = null)
     {
-        $this->setIfExists('name', $data ?? [], null);
-        $this->setIfExists('value', $data ?? [], null);
+        $this->setIfExists('meta', $data ?? [], null);
+        $this->setIfExists('ok', $data ?? [], null);
+        $this->setIfExists('data', $data ?? [], null);
     }
 
     /**
@@ -260,11 +266,14 @@ class MailboxDomainNameValueRecord implements ModelInterface, ArrayAccess, JsonS
     {
         $invalidProperties = [];
 
-        if ($this->container['name'] === null) {
-            $invalidProperties[] = "'name' can't be null";
+        if ($this->container['meta'] === null) {
+            $invalidProperties[] = "'meta' can't be null";
         }
-        if ($this->container['value'] === null) {
-            $invalidProperties[] = "'value' can't be null";
+        if ($this->container['ok'] === null) {
+            $invalidProperties[] = "'ok' can't be null";
+        }
+        if ($this->container['data'] === null) {
+            $invalidProperties[] = "'data' can't be null";
         }
         return $invalidProperties;
     }
@@ -279,55 +288,82 @@ class MailboxDomainNameValueRecord implements ModelInterface, ArrayAccess, JsonS
 
 
     /**
-     * Gets name
+     * Gets meta
      *
-     * @return string
+     * @return \Sendmux\Management\Model\ResponseMeta
      */
-    public function getName(): string
+    public function getMeta(): \Sendmux\Management\Model\ResponseMeta
     {
-        return $this->container['name'];
+        return $this->container['meta'];
     }
 
     /**
-     * Sets name
+     * Sets meta
      *
-     * @param string $name name
+     * @param \Sendmux\Management\Model\ResponseMeta $meta meta
      *
      * @return $this
      */
-    public function setName(string $name): static
+    public function setMeta(\Sendmux\Management\Model\ResponseMeta $meta): static
     {
-        if (is_null($name)) {
-            throw new InvalidArgumentException('non-nullable name cannot be null');
+        if (is_null($meta)) {
+            throw new InvalidArgumentException('non-nullable meta cannot be null');
         }
-        $this->container['name'] = $name;
+        $this->container['meta'] = $meta;
 
         return $this;
     }
 
     /**
-     * Gets value
+     * Gets ok
      *
-     * @return string
+     * @return bool
      */
-    public function getValue(): string
+    public function getOk(): bool
     {
-        return $this->container['value'];
+        return $this->container['ok'];
     }
 
     /**
-     * Sets value
+     * Sets ok
      *
-     * @param string $value value
+     * @param bool $ok ok
      *
      * @return $this
      */
-    public function setValue(string $value): static
+    public function setOk(bool $ok): static
     {
-        if (is_null($value)) {
-            throw new InvalidArgumentException('non-nullable value cannot be null');
+        if (is_null($ok)) {
+            throw new InvalidArgumentException('non-nullable ok cannot be null');
         }
-        $this->container['value'] = $value;
+        $this->container['ok'] = $ok;
+
+        return $this;
+    }
+
+    /**
+     * Gets data
+     *
+     * @return \Sendmux\Management\Model\SharedAmazonSesLimitRequestCancel
+     */
+    public function getData(): \Sendmux\Management\Model\SharedAmazonSesLimitRequestCancel
+    {
+        return $this->container['data'];
+    }
+
+    /**
+     * Sets data
+     *
+     * @param \Sendmux\Management\Model\SharedAmazonSesLimitRequestCancel $data data
+     *
+     * @return $this
+     */
+    public function setData(\Sendmux\Management\Model\SharedAmazonSesLimitRequestCancel $data): static
+    {
+        if (is_null($data)) {
+            throw new InvalidArgumentException('non-nullable data cannot be null');
+        }
+        $this->container['data'] = $data;
 
         return $this;
     }

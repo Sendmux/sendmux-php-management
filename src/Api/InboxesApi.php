@@ -145,7 +145,10 @@ class InboxesApi
         string $public_id,
         string $contentType = self::contentTypes['managementGetInboxLog'][0]
     ): \Sendmux\Management\Model\IncomingLogItemResponse|\Sendmux\Management\Model\ApiError {
-        list($response) = $this->managementGetInboxLogWithHttpInfo($public_id, $contentType);
+        list($response) = $this->managementGetInboxLogWithHttpInfo(
+            $public_id,
+            $contentType
+        );
         return $response;
     }
 
@@ -154,7 +157,7 @@ class InboxesApi
      *
      * Get incoming log
      *
-     * @param  string $public_id (required)
+     * @param  string $public_id public_id (required)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementGetInboxLog'] to see the possible values for this operation
      *
      * @throws ApiException on non-2xx response or if the response body is not in the expected format
@@ -165,7 +168,10 @@ class InboxesApi
         string $public_id,
         string $contentType = self::contentTypes['managementGetInboxLog'][0]
     ): array {
-        $request = $this->managementGetInboxLogRequest($public_id, $contentType);
+        $request = $this->managementGetInboxLogRequest(
+            $public_id,
+            $contentType
+        );
 
         try {
             $options = $this->createHttpClientOption();
@@ -280,7 +286,7 @@ class InboxesApi
      *
      * Get incoming log
      *
-     * @param  string $public_id (required)
+     * @param  string $public_id public_id (required)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementGetInboxLog'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -290,7 +296,10 @@ class InboxesApi
         string $public_id,
         string $contentType = self::contentTypes['managementGetInboxLog'][0]
     ): PromiseInterface {
-        return $this->managementGetInboxLogAsyncWithHttpInfo($public_id, $contentType)
+        return $this->managementGetInboxLogAsyncWithHttpInfo(
+            $public_id,
+            $contentType
+        )
             ->then(
                 function ($response) {
                     return $response[0];
@@ -303,7 +312,7 @@ class InboxesApi
      *
      * Get incoming log
      *
-     * @param  string $public_id (required)
+     * @param  string $public_id public_id (required)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementGetInboxLog'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -314,7 +323,10 @@ class InboxesApi
         string $contentType = self::contentTypes['managementGetInboxLog'][0]
     ): PromiseInterface {
         $returnType = '\Sendmux\Management\Model\IncomingLogItemResponse';
-        $request = $this->managementGetInboxLogRequest($public_id, $contentType);
+        $request = $this->managementGetInboxLogRequest(
+            $public_id,
+            $contentType
+        );
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -336,18 +348,34 @@ class InboxesApi
                     ];
                 },
                 function ($exception) {
-                    $response = $exception->getResponse();
-                    $statusCode = $response->getStatusCode();
-                    throw new ApiException(
-                        sprintf(
-                            '[%d] Error connecting to the API (%s)',
-                            $statusCode,
-                            $exception->getRequest()->getUri()
-                        ),
-                        $statusCode,
-                        $response->getHeaders(),
-                        (string) $response->getBody()
-                    );
+                    if ($exception instanceof RequestException) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            $exception->getResponse() ? $exception->getResponse()->getHeaders() : null,
+                            $exception->getResponse() ? (string) $exception->getResponse()->getBody() : null
+                        );
+                    }
+
+                    if ($exception instanceof ConnectException) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            null,
+                            null
+                        );
+                    }
+
+                    if ($exception instanceof \Throwable) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            null,
+                            null
+                        );
+                    }
+
+                    throw new ApiException('[0] Unknown API error', 0, null, null);
                 }
             );
     }
@@ -355,7 +383,7 @@ class InboxesApi
     /**
      * Create request for operation 'managementGetInboxLog'
      *
-     * @param  string $public_id (required)
+     * @param  string $public_id public_id (required)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementGetInboxLog'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -477,7 +505,16 @@ class InboxesApi
         ?string $search = null,
         string $contentType = self::contentTypes['managementListInboxLogs'][0]
     ): \Sendmux\Management\Model\IncomingLogItemCursorListResponse|\Sendmux\Management\Model\ApiError {
-        list($response) = $this->managementListInboxLogsWithHttpInfo($limit, $cursor, $mailbox_id, $event_type, $from_date, $to_date, $search, $contentType);
+        list($response) = $this->managementListInboxLogsWithHttpInfo(
+            $limit,
+            $cursor,
+            $mailbox_id,
+            $event_type,
+            $from_date,
+            $to_date,
+            $search,
+            $contentType
+        );
         return $response;
     }
 
@@ -486,13 +523,13 @@ class InboxesApi
      *
      * List incoming logs
      *
-     * @param  int|null $limit (optional)
-     * @param  string|null $cursor (optional)
-     * @param  string|null $mailbox_id (optional)
-     * @param  string|null $event_type (optional)
-     * @param  string|null $from_date (optional)
-     * @param  string|null $to_date (optional)
-     * @param  string|null $search (optional)
+     * @param  int|null $limit limit (optional)
+     * @param  string|null $cursor cursor (optional)
+     * @param  string|null $mailbox_id mailbox_id (optional)
+     * @param  string|null $event_type event_type (optional)
+     * @param  string|null $from_date from_date (optional)
+     * @param  string|null $to_date to_date (optional)
+     * @param  string|null $search search (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementListInboxLogs'] to see the possible values for this operation
      *
      * @throws ApiException on non-2xx response or if the response body is not in the expected format
@@ -509,7 +546,16 @@ class InboxesApi
         ?string $search = null,
         string $contentType = self::contentTypes['managementListInboxLogs'][0]
     ): array {
-        $request = $this->managementListInboxLogsRequest($limit, $cursor, $mailbox_id, $event_type, $from_date, $to_date, $search, $contentType);
+        $request = $this->managementListInboxLogsRequest(
+            $limit,
+            $cursor,
+            $mailbox_id,
+            $event_type,
+            $from_date,
+            $to_date,
+            $search,
+            $contentType
+        );
 
         try {
             $options = $this->createHttpClientOption();
@@ -610,13 +656,13 @@ class InboxesApi
      *
      * List incoming logs
      *
-     * @param  int|null $limit (optional)
-     * @param  string|null $cursor (optional)
-     * @param  string|null $mailbox_id (optional)
-     * @param  string|null $event_type (optional)
-     * @param  string|null $from_date (optional)
-     * @param  string|null $to_date (optional)
-     * @param  string|null $search (optional)
+     * @param  int|null $limit limit (optional)
+     * @param  string|null $cursor cursor (optional)
+     * @param  string|null $mailbox_id mailbox_id (optional)
+     * @param  string|null $event_type event_type (optional)
+     * @param  string|null $from_date from_date (optional)
+     * @param  string|null $to_date to_date (optional)
+     * @param  string|null $search search (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementListInboxLogs'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -632,7 +678,16 @@ class InboxesApi
         ?string $search = null,
         string $contentType = self::contentTypes['managementListInboxLogs'][0]
     ): PromiseInterface {
-        return $this->managementListInboxLogsAsyncWithHttpInfo($limit, $cursor, $mailbox_id, $event_type, $from_date, $to_date, $search, $contentType)
+        return $this->managementListInboxLogsAsyncWithHttpInfo(
+            $limit,
+            $cursor,
+            $mailbox_id,
+            $event_type,
+            $from_date,
+            $to_date,
+            $search,
+            $contentType
+        )
             ->then(
                 function ($response) {
                     return $response[0];
@@ -645,13 +700,13 @@ class InboxesApi
      *
      * List incoming logs
      *
-     * @param  int|null $limit (optional)
-     * @param  string|null $cursor (optional)
-     * @param  string|null $mailbox_id (optional)
-     * @param  string|null $event_type (optional)
-     * @param  string|null $from_date (optional)
-     * @param  string|null $to_date (optional)
-     * @param  string|null $search (optional)
+     * @param  int|null $limit limit (optional)
+     * @param  string|null $cursor cursor (optional)
+     * @param  string|null $mailbox_id mailbox_id (optional)
+     * @param  string|null $event_type event_type (optional)
+     * @param  string|null $from_date from_date (optional)
+     * @param  string|null $to_date to_date (optional)
+     * @param  string|null $search search (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementListInboxLogs'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -668,7 +723,16 @@ class InboxesApi
         string $contentType = self::contentTypes['managementListInboxLogs'][0]
     ): PromiseInterface {
         $returnType = '\Sendmux\Management\Model\IncomingLogItemCursorListResponse';
-        $request = $this->managementListInboxLogsRequest($limit, $cursor, $mailbox_id, $event_type, $from_date, $to_date, $search, $contentType);
+        $request = $this->managementListInboxLogsRequest(
+            $limit,
+            $cursor,
+            $mailbox_id,
+            $event_type,
+            $from_date,
+            $to_date,
+            $search,
+            $contentType
+        );
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -690,18 +754,34 @@ class InboxesApi
                     ];
                 },
                 function ($exception) {
-                    $response = $exception->getResponse();
-                    $statusCode = $response->getStatusCode();
-                    throw new ApiException(
-                        sprintf(
-                            '[%d] Error connecting to the API (%s)',
-                            $statusCode,
-                            $exception->getRequest()->getUri()
-                        ),
-                        $statusCode,
-                        $response->getHeaders(),
-                        (string) $response->getBody()
-                    );
+                    if ($exception instanceof RequestException) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            $exception->getResponse() ? $exception->getResponse()->getHeaders() : null,
+                            $exception->getResponse() ? (string) $exception->getResponse()->getBody() : null
+                        );
+                    }
+
+                    if ($exception instanceof ConnectException) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            null,
+                            null
+                        );
+                    }
+
+                    if ($exception instanceof \Throwable) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            null,
+                            null
+                        );
+                    }
+
+                    throw new ApiException('[0] Unknown API error', 0, null, null);
                 }
             );
     }
@@ -709,13 +789,13 @@ class InboxesApi
     /**
      * Create request for operation 'managementListInboxLogs'
      *
-     * @param  int|null $limit (optional)
-     * @param  string|null $cursor (optional)
-     * @param  string|null $mailbox_id (optional)
-     * @param  string|null $event_type (optional)
-     * @param  string|null $from_date (optional)
-     * @param  string|null $to_date (optional)
-     * @param  string|null $search (optional)
+     * @param  int|null $limit limit (optional)
+     * @param  string|null $cursor cursor (optional)
+     * @param  string|null $mailbox_id mailbox_id (optional)
+     * @param  string|null $event_type event_type (optional)
+     * @param  string|null $from_date from_date (optional)
+     * @param  string|null $to_date to_date (optional)
+     * @param  string|null $search search (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementListInboxLogs'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException

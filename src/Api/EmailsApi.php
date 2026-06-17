@@ -150,7 +150,11 @@ class EmailsApi
         ?string $if_none_match = null,
         string $contentType = self::contentTypes['managementGetEmailLog'][0]
     ): \Sendmux\Management\Model\DeliveryLogItemResponse|\Sendmux\Management\Model\ApiError|null {
-        list($response) = $this->managementGetEmailLogWithHttpInfo($public_id, $if_none_match, $contentType);
+        list($response) = $this->managementGetEmailLogWithHttpInfo(
+            $public_id,
+            $if_none_match,
+            $contentType
+        );
         return $response;
     }
 
@@ -159,8 +163,8 @@ class EmailsApi
      *
      * Get delivery log
      *
-     * @param  string $public_id (required)
-     * @param  string|null $if_none_match (optional)
+     * @param  string $public_id public_id (required)
+     * @param  string|null $if_none_match if_none_match (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementGetEmailLog'] to see the possible values for this operation
      *
      * @throws ApiException on non-2xx response or if the response body is not in the expected format
@@ -172,7 +176,11 @@ class EmailsApi
         ?string $if_none_match = null,
         string $contentType = self::contentTypes['managementGetEmailLog'][0]
     ): array {
-        $request = $this->managementGetEmailLogRequest($public_id, $if_none_match, $contentType);
+        $request = $this->managementGetEmailLogRequest(
+            $public_id,
+            $if_none_match,
+            $contentType
+        );
 
         try {
             $options = $this->createHttpClientOption();
@@ -203,6 +211,8 @@ class EmailsApi
                         $request,
                         $response,
                     );
+                case 304:
+                    return [null, $response->getStatusCode(), $response->getHeaders()];
                 case 401:
                     return $this->handleResponseWithDataType(
                         '\Sendmux\Management\Model\ApiError',
@@ -287,8 +297,8 @@ class EmailsApi
      *
      * Get delivery log
      *
-     * @param  string $public_id (required)
-     * @param  string|null $if_none_match (optional)
+     * @param  string $public_id public_id (required)
+     * @param  string|null $if_none_match if_none_match (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementGetEmailLog'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -299,7 +309,11 @@ class EmailsApi
         ?string $if_none_match = null,
         string $contentType = self::contentTypes['managementGetEmailLog'][0]
     ): PromiseInterface {
-        return $this->managementGetEmailLogAsyncWithHttpInfo($public_id, $if_none_match, $contentType)
+        return $this->managementGetEmailLogAsyncWithHttpInfo(
+            $public_id,
+            $if_none_match,
+            $contentType
+        )
             ->then(
                 function ($response) {
                     return $response[0];
@@ -312,8 +326,8 @@ class EmailsApi
      *
      * Get delivery log
      *
-     * @param  string $public_id (required)
-     * @param  string|null $if_none_match (optional)
+     * @param  string $public_id public_id (required)
+     * @param  string|null $if_none_match if_none_match (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementGetEmailLog'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -325,12 +339,20 @@ class EmailsApi
         string $contentType = self::contentTypes['managementGetEmailLog'][0]
     ): PromiseInterface {
         $returnType = '\Sendmux\Management\Model\DeliveryLogItemResponse';
-        $request = $this->managementGetEmailLogRequest($public_id, $if_none_match, $contentType);
+        $request = $this->managementGetEmailLogRequest(
+            $public_id,
+            $if_none_match,
+            $contentType
+        );
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
             ->then(
                 function ($response) use ($returnType) {
+                    if ($response->getStatusCode() === 304) {
+                        return [null, $response->getStatusCode(), $response->getHeaders()];
+                    }
+
                     if (in_array($returnType, ['\SplFileObject', '\Psr\Http\Message\StreamInterface'])) {
                         $content = $response->getBody(); //stream goes to serializer
                     } else {
@@ -347,18 +369,34 @@ class EmailsApi
                     ];
                 },
                 function ($exception) {
-                    $response = $exception->getResponse();
-                    $statusCode = $response->getStatusCode();
-                    throw new ApiException(
-                        sprintf(
-                            '[%d] Error connecting to the API (%s)',
-                            $statusCode,
-                            $exception->getRequest()->getUri()
-                        ),
-                        $statusCode,
-                        $response->getHeaders(),
-                        (string) $response->getBody()
-                    );
+                    if ($exception instanceof RequestException) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            $exception->getResponse() ? $exception->getResponse()->getHeaders() : null,
+                            $exception->getResponse() ? (string) $exception->getResponse()->getBody() : null
+                        );
+                    }
+
+                    if ($exception instanceof ConnectException) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            null,
+                            null
+                        );
+                    }
+
+                    if ($exception instanceof \Throwable) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            null,
+                            null
+                        );
+                    }
+
+                    throw new ApiException('[0] Unknown API error', 0, null, null);
                 }
             );
     }
@@ -366,8 +404,8 @@ class EmailsApi
     /**
      * Create request for operation 'managementGetEmailLog'
      *
-     * @param  string $public_id (required)
-     * @param  string|null $if_none_match (optional)
+     * @param  string $public_id public_id (required)
+     * @param  string|null $if_none_match if_none_match (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementGetEmailLog'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -491,7 +529,14 @@ class EmailsApi
         ?string $provider_id = null,
         string $contentType = self::contentTypes['managementGetEmailMetrics'][0]
     ): \Sendmux\Management\Model\EmailMetricsResponse|\Sendmux\Management\Model\ApiError {
-        list($response) = $this->managementGetEmailMetricsWithHttpInfo($window, $from_date, $to_date, $granularity, $provider_id, $contentType);
+        list($response) = $this->managementGetEmailMetricsWithHttpInfo(
+            $window,
+            $from_date,
+            $to_date,
+            $granularity,
+            $provider_id,
+            $contentType
+        );
         return $response;
     }
 
@@ -500,11 +545,11 @@ class EmailsApi
      *
      * Get email metrics
      *
-     * @param  string|null $window (optional)
-     * @param  string|null $from_date (optional)
-     * @param  string|null $to_date (optional)
-     * @param  string|null $granularity (optional)
-     * @param  string|null $provider_id (optional)
+     * @param  string|null $window window (optional)
+     * @param  string|null $from_date from_date (optional)
+     * @param  string|null $to_date to_date (optional)
+     * @param  string|null $granularity granularity (optional)
+     * @param  string|null $provider_id provider_id (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementGetEmailMetrics'] to see the possible values for this operation
      *
      * @throws ApiException on non-2xx response or if the response body is not in the expected format
@@ -519,7 +564,14 @@ class EmailsApi
         ?string $provider_id = null,
         string $contentType = self::contentTypes['managementGetEmailMetrics'][0]
     ): array {
-        $request = $this->managementGetEmailMetricsRequest($window, $from_date, $to_date, $granularity, $provider_id, $contentType);
+        $request = $this->managementGetEmailMetricsRequest(
+            $window,
+            $from_date,
+            $to_date,
+            $granularity,
+            $provider_id,
+            $contentType
+        );
 
         try {
             $options = $this->createHttpClientOption();
@@ -620,11 +672,11 @@ class EmailsApi
      *
      * Get email metrics
      *
-     * @param  string|null $window (optional)
-     * @param  string|null $from_date (optional)
-     * @param  string|null $to_date (optional)
-     * @param  string|null $granularity (optional)
-     * @param  string|null $provider_id (optional)
+     * @param  string|null $window window (optional)
+     * @param  string|null $from_date from_date (optional)
+     * @param  string|null $to_date to_date (optional)
+     * @param  string|null $granularity granularity (optional)
+     * @param  string|null $provider_id provider_id (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementGetEmailMetrics'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -638,7 +690,14 @@ class EmailsApi
         ?string $provider_id = null,
         string $contentType = self::contentTypes['managementGetEmailMetrics'][0]
     ): PromiseInterface {
-        return $this->managementGetEmailMetricsAsyncWithHttpInfo($window, $from_date, $to_date, $granularity, $provider_id, $contentType)
+        return $this->managementGetEmailMetricsAsyncWithHttpInfo(
+            $window,
+            $from_date,
+            $to_date,
+            $granularity,
+            $provider_id,
+            $contentType
+        )
             ->then(
                 function ($response) {
                     return $response[0];
@@ -651,11 +710,11 @@ class EmailsApi
      *
      * Get email metrics
      *
-     * @param  string|null $window (optional)
-     * @param  string|null $from_date (optional)
-     * @param  string|null $to_date (optional)
-     * @param  string|null $granularity (optional)
-     * @param  string|null $provider_id (optional)
+     * @param  string|null $window window (optional)
+     * @param  string|null $from_date from_date (optional)
+     * @param  string|null $to_date to_date (optional)
+     * @param  string|null $granularity granularity (optional)
+     * @param  string|null $provider_id provider_id (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementGetEmailMetrics'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -670,7 +729,14 @@ class EmailsApi
         string $contentType = self::contentTypes['managementGetEmailMetrics'][0]
     ): PromiseInterface {
         $returnType = '\Sendmux\Management\Model\EmailMetricsResponse';
-        $request = $this->managementGetEmailMetricsRequest($window, $from_date, $to_date, $granularity, $provider_id, $contentType);
+        $request = $this->managementGetEmailMetricsRequest(
+            $window,
+            $from_date,
+            $to_date,
+            $granularity,
+            $provider_id,
+            $contentType
+        );
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -692,18 +758,34 @@ class EmailsApi
                     ];
                 },
                 function ($exception) {
-                    $response = $exception->getResponse();
-                    $statusCode = $response->getStatusCode();
-                    throw new ApiException(
-                        sprintf(
-                            '[%d] Error connecting to the API (%s)',
-                            $statusCode,
-                            $exception->getRequest()->getUri()
-                        ),
-                        $statusCode,
-                        $response->getHeaders(),
-                        (string) $response->getBody()
-                    );
+                    if ($exception instanceof RequestException) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            $exception->getResponse() ? $exception->getResponse()->getHeaders() : null,
+                            $exception->getResponse() ? (string) $exception->getResponse()->getBody() : null
+                        );
+                    }
+
+                    if ($exception instanceof ConnectException) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            null,
+                            null
+                        );
+                    }
+
+                    if ($exception instanceof \Throwable) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            null,
+                            null
+                        );
+                    }
+
+                    throw new ApiException('[0] Unknown API error', 0, null, null);
                 }
             );
     }
@@ -711,11 +793,11 @@ class EmailsApi
     /**
      * Create request for operation 'managementGetEmailMetrics'
      *
-     * @param  string|null $window (optional)
-     * @param  string|null $from_date (optional)
-     * @param  string|null $to_date (optional)
-     * @param  string|null $granularity (optional)
-     * @param  string|null $provider_id (optional)
+     * @param  string|null $window window (optional)
+     * @param  string|null $from_date from_date (optional)
+     * @param  string|null $to_date to_date (optional)
+     * @param  string|null $granularity granularity (optional)
+     * @param  string|null $provider_id provider_id (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementGetEmailMetrics'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -876,7 +958,16 @@ class EmailsApi
         ?string $search = null,
         string $contentType = self::contentTypes['managementListEmailLogs'][0]
     ): \Sendmux\Management\Model\DeliveryLogItemCursorListResponse|\Sendmux\Management\Model\ApiError {
-        list($response) = $this->managementListEmailLogsWithHttpInfo($limit, $cursor, $status, $from_date, $to_date, $provider_id, $search, $contentType);
+        list($response) = $this->managementListEmailLogsWithHttpInfo(
+            $limit,
+            $cursor,
+            $status,
+            $from_date,
+            $to_date,
+            $provider_id,
+            $search,
+            $contentType
+        );
         return $response;
     }
 
@@ -885,13 +976,13 @@ class EmailsApi
      *
      * List delivery logs
      *
-     * @param  int|null $limit (optional)
-     * @param  string|null $cursor (optional)
-     * @param  string|null $status (optional)
-     * @param  string|null $from_date (optional)
-     * @param  string|null $to_date (optional)
-     * @param  string|null $provider_id (optional)
-     * @param  string|null $search (optional)
+     * @param  int|null $limit limit (optional)
+     * @param  string|null $cursor cursor (optional)
+     * @param  string|null $status status (optional)
+     * @param  string|null $from_date from_date (optional)
+     * @param  string|null $to_date to_date (optional)
+     * @param  string|null $provider_id provider_id (optional)
+     * @param  string|null $search search (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementListEmailLogs'] to see the possible values for this operation
      *
      * @throws ApiException on non-2xx response or if the response body is not in the expected format
@@ -908,7 +999,16 @@ class EmailsApi
         ?string $search = null,
         string $contentType = self::contentTypes['managementListEmailLogs'][0]
     ): array {
-        $request = $this->managementListEmailLogsRequest($limit, $cursor, $status, $from_date, $to_date, $provider_id, $search, $contentType);
+        $request = $this->managementListEmailLogsRequest(
+            $limit,
+            $cursor,
+            $status,
+            $from_date,
+            $to_date,
+            $provider_id,
+            $search,
+            $contentType
+        );
 
         try {
             $options = $this->createHttpClientOption();
@@ -1009,13 +1109,13 @@ class EmailsApi
      *
      * List delivery logs
      *
-     * @param  int|null $limit (optional)
-     * @param  string|null $cursor (optional)
-     * @param  string|null $status (optional)
-     * @param  string|null $from_date (optional)
-     * @param  string|null $to_date (optional)
-     * @param  string|null $provider_id (optional)
-     * @param  string|null $search (optional)
+     * @param  int|null $limit limit (optional)
+     * @param  string|null $cursor cursor (optional)
+     * @param  string|null $status status (optional)
+     * @param  string|null $from_date from_date (optional)
+     * @param  string|null $to_date to_date (optional)
+     * @param  string|null $provider_id provider_id (optional)
+     * @param  string|null $search search (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementListEmailLogs'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -1031,7 +1131,16 @@ class EmailsApi
         ?string $search = null,
         string $contentType = self::contentTypes['managementListEmailLogs'][0]
     ): PromiseInterface {
-        return $this->managementListEmailLogsAsyncWithHttpInfo($limit, $cursor, $status, $from_date, $to_date, $provider_id, $search, $contentType)
+        return $this->managementListEmailLogsAsyncWithHttpInfo(
+            $limit,
+            $cursor,
+            $status,
+            $from_date,
+            $to_date,
+            $provider_id,
+            $search,
+            $contentType
+        )
             ->then(
                 function ($response) {
                     return $response[0];
@@ -1044,13 +1153,13 @@ class EmailsApi
      *
      * List delivery logs
      *
-     * @param  int|null $limit (optional)
-     * @param  string|null $cursor (optional)
-     * @param  string|null $status (optional)
-     * @param  string|null $from_date (optional)
-     * @param  string|null $to_date (optional)
-     * @param  string|null $provider_id (optional)
-     * @param  string|null $search (optional)
+     * @param  int|null $limit limit (optional)
+     * @param  string|null $cursor cursor (optional)
+     * @param  string|null $status status (optional)
+     * @param  string|null $from_date from_date (optional)
+     * @param  string|null $to_date to_date (optional)
+     * @param  string|null $provider_id provider_id (optional)
+     * @param  string|null $search search (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementListEmailLogs'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -1067,7 +1176,16 @@ class EmailsApi
         string $contentType = self::contentTypes['managementListEmailLogs'][0]
     ): PromiseInterface {
         $returnType = '\Sendmux\Management\Model\DeliveryLogItemCursorListResponse';
-        $request = $this->managementListEmailLogsRequest($limit, $cursor, $status, $from_date, $to_date, $provider_id, $search, $contentType);
+        $request = $this->managementListEmailLogsRequest(
+            $limit,
+            $cursor,
+            $status,
+            $from_date,
+            $to_date,
+            $provider_id,
+            $search,
+            $contentType
+        );
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -1089,18 +1207,34 @@ class EmailsApi
                     ];
                 },
                 function ($exception) {
-                    $response = $exception->getResponse();
-                    $statusCode = $response->getStatusCode();
-                    throw new ApiException(
-                        sprintf(
-                            '[%d] Error connecting to the API (%s)',
-                            $statusCode,
-                            $exception->getRequest()->getUri()
-                        ),
-                        $statusCode,
-                        $response->getHeaders(),
-                        (string) $response->getBody()
-                    );
+                    if ($exception instanceof RequestException) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            $exception->getResponse() ? $exception->getResponse()->getHeaders() : null,
+                            $exception->getResponse() ? (string) $exception->getResponse()->getBody() : null
+                        );
+                    }
+
+                    if ($exception instanceof ConnectException) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            null,
+                            null
+                        );
+                    }
+
+                    if ($exception instanceof \Throwable) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            null,
+                            null
+                        );
+                    }
+
+                    throw new ApiException('[0] Unknown API error', 0, null, null);
                 }
             );
     }
@@ -1108,13 +1242,13 @@ class EmailsApi
     /**
      * Create request for operation 'managementListEmailLogs'
      *
-     * @param  int|null $limit (optional)
-     * @param  string|null $cursor (optional)
-     * @param  string|null $status (optional)
-     * @param  string|null $from_date (optional)
-     * @param  string|null $to_date (optional)
-     * @param  string|null $provider_id (optional)
-     * @param  string|null $search (optional)
+     * @param  int|null $limit limit (optional)
+     * @param  string|null $cursor cursor (optional)
+     * @param  string|null $status status (optional)
+     * @param  string|null $from_date from_date (optional)
+     * @param  string|null $to_date to_date (optional)
+     * @param  string|null $provider_id provider_id (optional)
+     * @param  string|null $search search (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementListEmailLogs'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException

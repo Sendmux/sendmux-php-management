@@ -1,7 +1,7 @@
 <?php
 
 /**
- * MailboxDomainNameValueRecord
+ * SharedAmazonSesLimitRequestCancel
  *
  * PHP version 8.1
  *
@@ -35,15 +35,14 @@ use ReturnTypeWillChange;
 use Sendmux\Management\ObjectSerializer;
 
 /**
- * MailboxDomainNameValueRecord Class Doc Comment
+ * SharedAmazonSesLimitRequestCancel Class Doc Comment
  *
- * @description SPF TXT record covering Amazon SES sending
  * @package  Sendmux\Management
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  * @implements ArrayAccess<string, mixed>
  */
-class MailboxDomainNameValueRecord implements ModelInterface, ArrayAccess, JsonSerializable
+class SharedAmazonSesLimitRequestCancel implements ModelInterface, ArrayAccess, JsonSerializable
 {
     public const DISCRIMINATOR = null;
 
@@ -52,7 +51,7 @@ class MailboxDomainNameValueRecord implements ModelInterface, ArrayAccess, JsonS
      *
      * @var string
      */
-    protected static string $openAPIModelName = 'MailboxDomainNameValueRecord';
+    protected static string $openAPIModelName = 'SharedAmazonSesLimitRequestCancel';
 
     /**
      * Array of property to type mappings. Used for (de)serialization
@@ -60,8 +59,8 @@ class MailboxDomainNameValueRecord implements ModelInterface, ArrayAccess, JsonS
      * @var array<string, string>
      */
     protected static array $openAPITypes = [
-        'name' => 'string',
-        'value' => 'string'
+        'limit' => '\Sendmux\Management\Model\SharedAmazonSesLimit',
+        'request' => '\Sendmux\Management\Model\SharedAmazonSesLimitRequest'
     ];
 
     /**
@@ -70,8 +69,8 @@ class MailboxDomainNameValueRecord implements ModelInterface, ArrayAccess, JsonS
      * @var array<string, string|null>
      */
     protected static array $openAPIFormats = [
-        'name' => null,
-        'value' => null
+        'limit' => null,
+        'request' => null
     ];
 
     /**
@@ -80,8 +79,8 @@ class MailboxDomainNameValueRecord implements ModelInterface, ArrayAccess, JsonS
      * @var array<string, bool>
      */
     protected static array $openAPINullables = [
-        'name' => false,
-        'value' => false
+        'limit' => false,
+        'request' => false
     ];
 
     /**
@@ -160,8 +159,8 @@ class MailboxDomainNameValueRecord implements ModelInterface, ArrayAccess, JsonS
      * @var array<string, string>
      */
     protected static array $attributeMap = [
-        'name' => 'name',
-        'value' => 'value'
+        'limit' => 'limit',
+        'request' => 'request'
     ];
 
     /**
@@ -170,8 +169,8 @@ class MailboxDomainNameValueRecord implements ModelInterface, ArrayAccess, JsonS
      * @var array<string, string>
      */
     protected static array $setters = [
-        'name' => 'setName',
-        'value' => 'setValue'
+        'limit' => 'setLimit',
+        'request' => 'setRequest'
     ];
 
     /**
@@ -180,8 +179,8 @@ class MailboxDomainNameValueRecord implements ModelInterface, ArrayAccess, JsonS
      * @var array<string, string>
      */
     protected static array $getters = [
-        'name' => 'getName',
-        'value' => 'getValue'
+        'limit' => 'getLimit',
+        'request' => 'getRequest'
     ];
 
     /**
@@ -231,8 +230,8 @@ class MailboxDomainNameValueRecord implements ModelInterface, ArrayAccess, JsonS
      */
     public function __construct(?array $data = null)
     {
-        $this->setIfExists('name', $data ?? [], null);
-        $this->setIfExists('value', $data ?? [], null);
+        $this->setIfExists('limit', $data ?? [], null);
+        $this->setIfExists('request', $data ?? [], null);
     }
 
     /**
@@ -260,11 +259,11 @@ class MailboxDomainNameValueRecord implements ModelInterface, ArrayAccess, JsonS
     {
         $invalidProperties = [];
 
-        if ($this->container['name'] === null) {
-            $invalidProperties[] = "'name' can't be null";
+        if ($this->container['limit'] === null) {
+            $invalidProperties[] = "'limit' can't be null";
         }
-        if ($this->container['value'] === null) {
-            $invalidProperties[] = "'value' can't be null";
+        if ($this->container['request'] === null) {
+            $invalidProperties[] = "'request' can't be null";
         }
         return $invalidProperties;
     }
@@ -279,55 +278,55 @@ class MailboxDomainNameValueRecord implements ModelInterface, ArrayAccess, JsonS
 
 
     /**
-     * Gets name
+     * Gets limit
      *
-     * @return string
+     * @return \Sendmux\Management\Model\SharedAmazonSesLimit
      */
-    public function getName(): string
+    public function getLimit(): \Sendmux\Management\Model\SharedAmazonSesLimit
     {
-        return $this->container['name'];
+        return $this->container['limit'];
     }
 
     /**
-     * Sets name
+     * Sets limit
      *
-     * @param string $name name
+     * @param \Sendmux\Management\Model\SharedAmazonSesLimit $limit limit
      *
      * @return $this
      */
-    public function setName(string $name): static
+    public function setLimit(\Sendmux\Management\Model\SharedAmazonSesLimit $limit): static
     {
-        if (is_null($name)) {
-            throw new InvalidArgumentException('non-nullable name cannot be null');
+        if (is_null($limit)) {
+            throw new InvalidArgumentException('non-nullable limit cannot be null');
         }
-        $this->container['name'] = $name;
+        $this->container['limit'] = $limit;
 
         return $this;
     }
 
     /**
-     * Gets value
+     * Gets request
      *
-     * @return string
+     * @return \Sendmux\Management\Model\SharedAmazonSesLimitRequest
      */
-    public function getValue(): string
+    public function getRequest(): \Sendmux\Management\Model\SharedAmazonSesLimitRequest
     {
-        return $this->container['value'];
+        return $this->container['request'];
     }
 
     /**
-     * Sets value
+     * Sets request
      *
-     * @param string $value value
+     * @param \Sendmux\Management\Model\SharedAmazonSesLimitRequest $request request
      *
      * @return $this
      */
-    public function setValue(string $value): static
+    public function setRequest(\Sendmux\Management\Model\SharedAmazonSesLimitRequest $request): static
     {
-        if (is_null($value)) {
-            throw new InvalidArgumentException('non-nullable value cannot be null');
+        if (is_null($request)) {
+            throw new InvalidArgumentException('non-nullable request cannot be null');
         }
-        $this->container['value'] = $value;
+        $this->container['request'] = $request;
 
         return $this;
     }

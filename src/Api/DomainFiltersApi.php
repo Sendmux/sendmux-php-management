@@ -147,7 +147,11 @@ class DomainFiltersApi
         ?string $if_none_match = null,
         string $contentType = self::contentTypes['managementGetDomainFilters'][0]
     ): \Sendmux\Management\Model\FilterStateResponse|\Sendmux\Management\Model\ApiError|null {
-        list($response) = $this->managementGetDomainFiltersWithHttpInfo($public_id, $if_none_match, $contentType);
+        list($response) = $this->managementGetDomainFiltersWithHttpInfo(
+            $public_id,
+            $if_none_match,
+            $contentType
+        );
         return $response;
     }
 
@@ -156,20 +160,24 @@ class DomainFiltersApi
      *
      * Get domain-wide sender filters
      *
-     * @param  string $public_id (required)
-     * @param  string|null $if_none_match (optional)
+     * @param  string $public_id public_id (required)
+     * @param  string|null $if_none_match if_none_match (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementGetDomainFilters'] to see the possible values for this operation
      *
      * @throws ApiException on non-2xx response or if the response body is not in the expected format
      * @throws InvalidArgumentException
-     * @return array of \Sendmux\Management\Model\FilterStateResponse|\Sendmux\Management\Model\ApiError|\Sendmux\Management\Model\ApiError, HTTP status code, HTTP response headers (array of strings)
+     * @return array of \Sendmux\Management\Model\FilterStateResponse|\Sendmux\Management\Model\ApiError|\Sendmux\Management\Model\ApiError|\Sendmux\Management\Model\ApiError, HTTP status code, HTTP response headers (array of strings)
      */
     public function managementGetDomainFiltersWithHttpInfo(
         string $public_id,
         ?string $if_none_match = null,
         string $contentType = self::contentTypes['managementGetDomainFilters'][0]
     ): array {
-        $request = $this->managementGetDomainFiltersRequest($public_id, $if_none_match, $contentType);
+        $request = $this->managementGetDomainFiltersRequest(
+            $public_id,
+            $if_none_match,
+            $contentType
+        );
 
         try {
             $options = $this->createHttpClientOption();
@@ -200,7 +208,15 @@ class DomainFiltersApi
                         $request,
                         $response,
                     );
+                case 304:
+                    return [null, $response->getStatusCode(), $response->getHeaders()];
                 case 404:
+                    return $this->handleResponseWithDataType(
+                        '\Sendmux\Management\Model\ApiError',
+                        $request,
+                        $response,
+                    );
+                case 409:
                     return $this->handleResponseWithDataType(
                         '\Sendmux\Management\Model\ApiError',
                         $request,
@@ -251,6 +267,14 @@ class DomainFiltersApi
                     );
                     $e->setResponseObject($data);
                     throw $e;
+                case 409:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Sendmux\Management\Model\ApiError',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
                 case 503:
                     $data = ObjectSerializer::deserialize(
                         $e->getResponseBody(),
@@ -270,8 +294,8 @@ class DomainFiltersApi
      *
      * Get domain-wide sender filters
      *
-     * @param  string $public_id (required)
-     * @param  string|null $if_none_match (optional)
+     * @param  string $public_id public_id (required)
+     * @param  string|null $if_none_match if_none_match (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementGetDomainFilters'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -282,7 +306,11 @@ class DomainFiltersApi
         ?string $if_none_match = null,
         string $contentType = self::contentTypes['managementGetDomainFilters'][0]
     ): PromiseInterface {
-        return $this->managementGetDomainFiltersAsyncWithHttpInfo($public_id, $if_none_match, $contentType)
+        return $this->managementGetDomainFiltersAsyncWithHttpInfo(
+            $public_id,
+            $if_none_match,
+            $contentType
+        )
             ->then(
                 function ($response) {
                     return $response[0];
@@ -295,8 +323,8 @@ class DomainFiltersApi
      *
      * Get domain-wide sender filters
      *
-     * @param  string $public_id (required)
-     * @param  string|null $if_none_match (optional)
+     * @param  string $public_id public_id (required)
+     * @param  string|null $if_none_match if_none_match (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementGetDomainFilters'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -308,12 +336,20 @@ class DomainFiltersApi
         string $contentType = self::contentTypes['managementGetDomainFilters'][0]
     ): PromiseInterface {
         $returnType = '\Sendmux\Management\Model\FilterStateResponse';
-        $request = $this->managementGetDomainFiltersRequest($public_id, $if_none_match, $contentType);
+        $request = $this->managementGetDomainFiltersRequest(
+            $public_id,
+            $if_none_match,
+            $contentType
+        );
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
             ->then(
                 function ($response) use ($returnType) {
+                    if ($response->getStatusCode() === 304) {
+                        return [null, $response->getStatusCode(), $response->getHeaders()];
+                    }
+
                     if (in_array($returnType, ['\SplFileObject', '\Psr\Http\Message\StreamInterface'])) {
                         $content = $response->getBody(); //stream goes to serializer
                     } else {
@@ -330,18 +366,34 @@ class DomainFiltersApi
                     ];
                 },
                 function ($exception) {
-                    $response = $exception->getResponse();
-                    $statusCode = $response->getStatusCode();
-                    throw new ApiException(
-                        sprintf(
-                            '[%d] Error connecting to the API (%s)',
-                            $statusCode,
-                            $exception->getRequest()->getUri()
-                        ),
-                        $statusCode,
-                        $response->getHeaders(),
-                        (string) $response->getBody()
-                    );
+                    if ($exception instanceof RequestException) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            $exception->getResponse() ? $exception->getResponse()->getHeaders() : null,
+                            $exception->getResponse() ? (string) $exception->getResponse()->getBody() : null
+                        );
+                    }
+
+                    if ($exception instanceof ConnectException) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            null,
+                            null
+                        );
+                    }
+
+                    if ($exception instanceof \Throwable) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            null,
+                            null
+                        );
+                    }
+
+                    throw new ApiException('[0] Unknown API error', 0, null, null);
                 }
             );
     }
@@ -349,8 +401,8 @@ class DomainFiltersApi
     /**
      * Create request for operation 'managementGetDomainFilters'
      *
-     * @param  string $public_id (required)
-     * @param  string|null $if_none_match (optional)
+     * @param  string $public_id public_id (required)
+     * @param  string|null $if_none_match if_none_match (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementGetDomainFilters'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -470,7 +522,12 @@ class DomainFiltersApi
         ?\Sendmux\Management\Model\SetFilterStateBody $set_filter_state_body = null,
         string $contentType = self::contentTypes['managementSetDomainFilters'][0]
     ): \Sendmux\Management\Model\FilterStateResponse|\Sendmux\Management\Model\ApiError {
-        list($response) = $this->managementSetDomainFiltersWithHttpInfo($public_id, $if_match, $set_filter_state_body, $contentType);
+        list($response) = $this->managementSetDomainFiltersWithHttpInfo(
+            $public_id,
+            $if_match,
+            $set_filter_state_body,
+            $contentType
+        );
         return $response;
     }
 
@@ -479,9 +536,9 @@ class DomainFiltersApi
      *
      * Replace domain-wide sender filters
      *
-     * @param  string $public_id (required)
-     * @param  string|null $if_match (optional)
-     * @param  \Sendmux\Management\Model\SetFilterStateBody|null $set_filter_state_body (optional)
+     * @param  string $public_id public_id (required)
+     * @param  string|null $if_match if_match (optional)
+     * @param  \Sendmux\Management\Model\SetFilterStateBody|null $set_filter_state_body set_filter_state_body (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementSetDomainFilters'] to see the possible values for this operation
      *
      * @throws ApiException on non-2xx response or if the response body is not in the expected format
@@ -494,7 +551,12 @@ class DomainFiltersApi
         ?\Sendmux\Management\Model\SetFilterStateBody $set_filter_state_body = null,
         string $contentType = self::contentTypes['managementSetDomainFilters'][0]
     ): array {
-        $request = $this->managementSetDomainFiltersRequest($public_id, $if_match, $set_filter_state_body, $contentType);
+        $request = $this->managementSetDomainFiltersRequest(
+            $public_id,
+            $if_match,
+            $set_filter_state_body,
+            $contentType
+        );
 
         try {
             $options = $this->createHttpClientOption();
@@ -637,9 +699,9 @@ class DomainFiltersApi
      *
      * Replace domain-wide sender filters
      *
-     * @param  string $public_id (required)
-     * @param  string|null $if_match (optional)
-     * @param  \Sendmux\Management\Model\SetFilterStateBody|null $set_filter_state_body (optional)
+     * @param  string $public_id public_id (required)
+     * @param  string|null $if_match if_match (optional)
+     * @param  \Sendmux\Management\Model\SetFilterStateBody|null $set_filter_state_body set_filter_state_body (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementSetDomainFilters'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -651,7 +713,12 @@ class DomainFiltersApi
         ?\Sendmux\Management\Model\SetFilterStateBody $set_filter_state_body = null,
         string $contentType = self::contentTypes['managementSetDomainFilters'][0]
     ): PromiseInterface {
-        return $this->managementSetDomainFiltersAsyncWithHttpInfo($public_id, $if_match, $set_filter_state_body, $contentType)
+        return $this->managementSetDomainFiltersAsyncWithHttpInfo(
+            $public_id,
+            $if_match,
+            $set_filter_state_body,
+            $contentType
+        )
             ->then(
                 function ($response) {
                     return $response[0];
@@ -664,9 +731,9 @@ class DomainFiltersApi
      *
      * Replace domain-wide sender filters
      *
-     * @param  string $public_id (required)
-     * @param  string|null $if_match (optional)
-     * @param  \Sendmux\Management\Model\SetFilterStateBody|null $set_filter_state_body (optional)
+     * @param  string $public_id public_id (required)
+     * @param  string|null $if_match if_match (optional)
+     * @param  \Sendmux\Management\Model\SetFilterStateBody|null $set_filter_state_body set_filter_state_body (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementSetDomainFilters'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -679,7 +746,12 @@ class DomainFiltersApi
         string $contentType = self::contentTypes['managementSetDomainFilters'][0]
     ): PromiseInterface {
         $returnType = '\Sendmux\Management\Model\FilterStateResponse';
-        $request = $this->managementSetDomainFiltersRequest($public_id, $if_match, $set_filter_state_body, $contentType);
+        $request = $this->managementSetDomainFiltersRequest(
+            $public_id,
+            $if_match,
+            $set_filter_state_body,
+            $contentType
+        );
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -701,18 +773,34 @@ class DomainFiltersApi
                     ];
                 },
                 function ($exception) {
-                    $response = $exception->getResponse();
-                    $statusCode = $response->getStatusCode();
-                    throw new ApiException(
-                        sprintf(
-                            '[%d] Error connecting to the API (%s)',
-                            $statusCode,
-                            $exception->getRequest()->getUri()
-                        ),
-                        $statusCode,
-                        $response->getHeaders(),
-                        (string) $response->getBody()
-                    );
+                    if ($exception instanceof RequestException) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            $exception->getResponse() ? $exception->getResponse()->getHeaders() : null,
+                            $exception->getResponse() ? (string) $exception->getResponse()->getBody() : null
+                        );
+                    }
+
+                    if ($exception instanceof ConnectException) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            null,
+                            null
+                        );
+                    }
+
+                    if ($exception instanceof \Throwable) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            null,
+                            null
+                        );
+                    }
+
+                    throw new ApiException('[0] Unknown API error', 0, null, null);
                 }
             );
     }
@@ -720,9 +808,9 @@ class DomainFiltersApi
     /**
      * Create request for operation 'managementSetDomainFilters'
      *
-     * @param  string $public_id (required)
-     * @param  string|null $if_match (optional)
-     * @param  \Sendmux\Management\Model\SetFilterStateBody|null $set_filter_state_body (optional)
+     * @param  string $public_id public_id (required)
+     * @param  string|null $if_match if_match (optional)
+     * @param  \Sendmux\Management\Model\SetFilterStateBody|null $set_filter_state_body set_filter_state_body (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementSetDomainFilters'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * MailboxDomainNameValueRecord
+ * ManagementUpdateDomainRequest
  *
  * PHP version 8.1
  *
@@ -35,15 +35,14 @@ use ReturnTypeWillChange;
 use Sendmux\Management\ObjectSerializer;
 
 /**
- * MailboxDomainNameValueRecord Class Doc Comment
+ * ManagementUpdateDomainRequest Class Doc Comment
  *
- * @description SPF TXT record covering Amazon SES sending
  * @package  Sendmux\Management
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  * @implements ArrayAccess<string, mixed>
  */
-class MailboxDomainNameValueRecord implements ModelInterface, ArrayAccess, JsonSerializable
+class ManagementUpdateDomainRequest implements ModelInterface, ArrayAccess, JsonSerializable
 {
     public const DISCRIMINATOR = null;
 
@@ -52,7 +51,7 @@ class MailboxDomainNameValueRecord implements ModelInterface, ArrayAccess, JsonS
      *
      * @var string
      */
-    protected static string $openAPIModelName = 'MailboxDomainNameValueRecord';
+    protected static string $openAPIModelName = 'managementUpdateDomain_request';
 
     /**
      * Array of property to type mappings. Used for (de)serialization
@@ -60,8 +59,7 @@ class MailboxDomainNameValueRecord implements ModelInterface, ArrayAccess, JsonS
      * @var array<string, string>
      */
     protected static array $openAPITypes = [
-        'name' => 'string',
-        'value' => 'string'
+        'mode' => 'string'
     ];
 
     /**
@@ -70,8 +68,7 @@ class MailboxDomainNameValueRecord implements ModelInterface, ArrayAccess, JsonS
      * @var array<string, string|null>
      */
     protected static array $openAPIFormats = [
-        'name' => null,
-        'value' => null
+        'mode' => null
     ];
 
     /**
@@ -80,8 +77,7 @@ class MailboxDomainNameValueRecord implements ModelInterface, ArrayAccess, JsonS
      * @var array<string, bool>
      */
     protected static array $openAPINullables = [
-        'name' => false,
-        'value' => false
+        'mode' => false
     ];
 
     /**
@@ -160,8 +156,7 @@ class MailboxDomainNameValueRecord implements ModelInterface, ArrayAccess, JsonS
      * @var array<string, string>
      */
     protected static array $attributeMap = [
-        'name' => 'name',
-        'value' => 'value'
+        'mode' => 'mode'
     ];
 
     /**
@@ -170,8 +165,7 @@ class MailboxDomainNameValueRecord implements ModelInterface, ArrayAccess, JsonS
      * @var array<string, string>
      */
     protected static array $setters = [
-        'name' => 'setName',
-        'value' => 'setValue'
+        'mode' => 'setMode'
     ];
 
     /**
@@ -180,8 +174,7 @@ class MailboxDomainNameValueRecord implements ModelInterface, ArrayAccess, JsonS
      * @var array<string, string>
      */
     protected static array $getters = [
-        'name' => 'getName',
-        'value' => 'getValue'
+        'mode' => 'getMode'
     ];
 
     /**
@@ -216,6 +209,21 @@ class MailboxDomainNameValueRecord implements ModelInterface, ArrayAccess, JsonS
         return self::$openAPIModelName;
     }
 
+    public const MODE_SEND_RECEIVE = 'send_receive';
+    public const MODE_UNKNOWN_DEFAULT_OPEN_API = 'unknown_default_open_api';
+
+    /**
+     * Gets allowable values of the enum
+     *
+     * @return string[]
+     */
+    public static function getModeAllowableValues()
+    {
+        return [
+            self::MODE_SEND_RECEIVE,
+            self::MODE_UNKNOWN_DEFAULT_OPEN_API,
+        ];
+    }
 
     /**
      * Associative array for storing property values
@@ -231,8 +239,7 @@ class MailboxDomainNameValueRecord implements ModelInterface, ArrayAccess, JsonS
      */
     public function __construct(?array $data = null)
     {
-        $this->setIfExists('name', $data ?? [], null);
-        $this->setIfExists('value', $data ?? [], null);
+        $this->setIfExists('mode', $data ?? [], null);
     }
 
     /**
@@ -260,12 +267,18 @@ class MailboxDomainNameValueRecord implements ModelInterface, ArrayAccess, JsonS
     {
         $invalidProperties = [];
 
-        if ($this->container['name'] === null) {
-            $invalidProperties[] = "'name' can't be null";
+        if ($this->container['mode'] === null) {
+            $invalidProperties[] = "'mode' can't be null";
         }
-        if ($this->container['value'] === null) {
-            $invalidProperties[] = "'value' can't be null";
+        $allowedValues = self::getModeAllowableValues();
+        if (!is_null($this->container['mode']) && !in_array($this->container['mode'], $allowedValues, true)) {
+            $invalidProperties[] = sprintf(
+                "invalid value '%s' for 'mode', must be one of '%s'",
+                $this->container['mode'],
+                implode("', '", $allowedValues)
+            );
         }
+
         return $invalidProperties;
     }
 
@@ -279,55 +292,32 @@ class MailboxDomainNameValueRecord implements ModelInterface, ArrayAccess, JsonS
 
 
     /**
-     * Gets name
+     * Gets mode
      *
      * @return string
      */
-    public function getName(): string
+    public function getMode(): string
     {
-        return $this->container['name'];
+        return $this->container['mode'];
     }
 
     /**
-     * Sets name
+     * Sets mode
      *
-     * @param string $name name
+     * @param string $mode The only supported update is upgrading to `send_receive`.
      *
      * @return $this
      */
-    public function setName(string $name): static
+    public function setMode(string $mode): static
     {
-        if (is_null($name)) {
-            throw new InvalidArgumentException('non-nullable name cannot be null');
+        if (is_null($mode)) {
+            throw new InvalidArgumentException('non-nullable mode cannot be null');
         }
-        $this->container['name'] = $name;
-
-        return $this;
-    }
-
-    /**
-     * Gets value
-     *
-     * @return string
-     */
-    public function getValue(): string
-    {
-        return $this->container['value'];
-    }
-
-    /**
-     * Sets value
-     *
-     * @param string $value value
-     *
-     * @return $this
-     */
-    public function setValue(string $value): static
-    {
-        if (is_null($value)) {
-            throw new InvalidArgumentException('non-nullable value cannot be null');
+        $allowedValues = self::getModeAllowableValues();
+        if (!in_array($mode, $allowedValues, true)) {
+            $mode = self::MODE_UNKNOWN_DEFAULT_OPEN_API;
         }
-        $this->container['value'] = $value;
+        $this->container['mode'] = $mode;
 
         return $this;
     }

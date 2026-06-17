@@ -147,7 +147,11 @@ class MailboxFiltersApi
         ?string $if_none_match = null,
         string $contentType = self::contentTypes['managementGetMailboxFilters'][0]
     ): \Sendmux\Management\Model\FilterStateResponse|\Sendmux\Management\Model\ApiError|null {
-        list($response) = $this->managementGetMailboxFiltersWithHttpInfo($public_id, $if_none_match, $contentType);
+        list($response) = $this->managementGetMailboxFiltersWithHttpInfo(
+            $public_id,
+            $if_none_match,
+            $contentType
+        );
         return $response;
     }
 
@@ -156,8 +160,8 @@ class MailboxFiltersApi
      *
      * Get mailbox sender filters
      *
-     * @param  string $public_id (required)
-     * @param  string|null $if_none_match (optional)
+     * @param  string $public_id public_id (required)
+     * @param  string|null $if_none_match if_none_match (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementGetMailboxFilters'] to see the possible values for this operation
      *
      * @throws ApiException on non-2xx response or if the response body is not in the expected format
@@ -169,7 +173,11 @@ class MailboxFiltersApi
         ?string $if_none_match = null,
         string $contentType = self::contentTypes['managementGetMailboxFilters'][0]
     ): array {
-        $request = $this->managementGetMailboxFiltersRequest($public_id, $if_none_match, $contentType);
+        $request = $this->managementGetMailboxFiltersRequest(
+            $public_id,
+            $if_none_match,
+            $contentType
+        );
 
         try {
             $options = $this->createHttpClientOption();
@@ -200,6 +208,8 @@ class MailboxFiltersApi
                         $request,
                         $response,
                     );
+                case 304:
+                    return [null, $response->getStatusCode(), $response->getHeaders()];
                 case 404:
                     return $this->handleResponseWithDataType(
                         '\Sendmux\Management\Model\ApiError',
@@ -270,8 +280,8 @@ class MailboxFiltersApi
      *
      * Get mailbox sender filters
      *
-     * @param  string $public_id (required)
-     * @param  string|null $if_none_match (optional)
+     * @param  string $public_id public_id (required)
+     * @param  string|null $if_none_match if_none_match (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementGetMailboxFilters'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -282,7 +292,11 @@ class MailboxFiltersApi
         ?string $if_none_match = null,
         string $contentType = self::contentTypes['managementGetMailboxFilters'][0]
     ): PromiseInterface {
-        return $this->managementGetMailboxFiltersAsyncWithHttpInfo($public_id, $if_none_match, $contentType)
+        return $this->managementGetMailboxFiltersAsyncWithHttpInfo(
+            $public_id,
+            $if_none_match,
+            $contentType
+        )
             ->then(
                 function ($response) {
                     return $response[0];
@@ -295,8 +309,8 @@ class MailboxFiltersApi
      *
      * Get mailbox sender filters
      *
-     * @param  string $public_id (required)
-     * @param  string|null $if_none_match (optional)
+     * @param  string $public_id public_id (required)
+     * @param  string|null $if_none_match if_none_match (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementGetMailboxFilters'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -308,12 +322,20 @@ class MailboxFiltersApi
         string $contentType = self::contentTypes['managementGetMailboxFilters'][0]
     ): PromiseInterface {
         $returnType = '\Sendmux\Management\Model\FilterStateResponse';
-        $request = $this->managementGetMailboxFiltersRequest($public_id, $if_none_match, $contentType);
+        $request = $this->managementGetMailboxFiltersRequest(
+            $public_id,
+            $if_none_match,
+            $contentType
+        );
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
             ->then(
                 function ($response) use ($returnType) {
+                    if ($response->getStatusCode() === 304) {
+                        return [null, $response->getStatusCode(), $response->getHeaders()];
+                    }
+
                     if (in_array($returnType, ['\SplFileObject', '\Psr\Http\Message\StreamInterface'])) {
                         $content = $response->getBody(); //stream goes to serializer
                     } else {
@@ -330,18 +352,34 @@ class MailboxFiltersApi
                     ];
                 },
                 function ($exception) {
-                    $response = $exception->getResponse();
-                    $statusCode = $response->getStatusCode();
-                    throw new ApiException(
-                        sprintf(
-                            '[%d] Error connecting to the API (%s)',
-                            $statusCode,
-                            $exception->getRequest()->getUri()
-                        ),
-                        $statusCode,
-                        $response->getHeaders(),
-                        (string) $response->getBody()
-                    );
+                    if ($exception instanceof RequestException) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            $exception->getResponse() ? $exception->getResponse()->getHeaders() : null,
+                            $exception->getResponse() ? (string) $exception->getResponse()->getBody() : null
+                        );
+                    }
+
+                    if ($exception instanceof ConnectException) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            null,
+                            null
+                        );
+                    }
+
+                    if ($exception instanceof \Throwable) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            null,
+                            null
+                        );
+                    }
+
+                    throw new ApiException('[0] Unknown API error', 0, null, null);
                 }
             );
     }
@@ -349,8 +387,8 @@ class MailboxFiltersApi
     /**
      * Create request for operation 'managementGetMailboxFilters'
      *
-     * @param  string $public_id (required)
-     * @param  string|null $if_none_match (optional)
+     * @param  string $public_id public_id (required)
+     * @param  string|null $if_none_match if_none_match (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementGetMailboxFilters'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -470,7 +508,12 @@ class MailboxFiltersApi
         ?\Sendmux\Management\Model\SetFilterStateBody $set_filter_state_body = null,
         string $contentType = self::contentTypes['managementSetMailboxFilters'][0]
     ): \Sendmux\Management\Model\FilterStateResponse|\Sendmux\Management\Model\ApiError {
-        list($response) = $this->managementSetMailboxFiltersWithHttpInfo($public_id, $if_match, $set_filter_state_body, $contentType);
+        list($response) = $this->managementSetMailboxFiltersWithHttpInfo(
+            $public_id,
+            $if_match,
+            $set_filter_state_body,
+            $contentType
+        );
         return $response;
     }
 
@@ -479,9 +522,9 @@ class MailboxFiltersApi
      *
      * Replace mailbox sender filters
      *
-     * @param  string $public_id (required)
-     * @param  string|null $if_match (optional)
-     * @param  \Sendmux\Management\Model\SetFilterStateBody|null $set_filter_state_body (optional)
+     * @param  string $public_id public_id (required)
+     * @param  string|null $if_match if_match (optional)
+     * @param  \Sendmux\Management\Model\SetFilterStateBody|null $set_filter_state_body set_filter_state_body (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementSetMailboxFilters'] to see the possible values for this operation
      *
      * @throws ApiException on non-2xx response or if the response body is not in the expected format
@@ -494,7 +537,12 @@ class MailboxFiltersApi
         ?\Sendmux\Management\Model\SetFilterStateBody $set_filter_state_body = null,
         string $contentType = self::contentTypes['managementSetMailboxFilters'][0]
     ): array {
-        $request = $this->managementSetMailboxFiltersRequest($public_id, $if_match, $set_filter_state_body, $contentType);
+        $request = $this->managementSetMailboxFiltersRequest(
+            $public_id,
+            $if_match,
+            $set_filter_state_body,
+            $contentType
+        );
 
         try {
             $options = $this->createHttpClientOption();
@@ -637,9 +685,9 @@ class MailboxFiltersApi
      *
      * Replace mailbox sender filters
      *
-     * @param  string $public_id (required)
-     * @param  string|null $if_match (optional)
-     * @param  \Sendmux\Management\Model\SetFilterStateBody|null $set_filter_state_body (optional)
+     * @param  string $public_id public_id (required)
+     * @param  string|null $if_match if_match (optional)
+     * @param  \Sendmux\Management\Model\SetFilterStateBody|null $set_filter_state_body set_filter_state_body (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementSetMailboxFilters'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -651,7 +699,12 @@ class MailboxFiltersApi
         ?\Sendmux\Management\Model\SetFilterStateBody $set_filter_state_body = null,
         string $contentType = self::contentTypes['managementSetMailboxFilters'][0]
     ): PromiseInterface {
-        return $this->managementSetMailboxFiltersAsyncWithHttpInfo($public_id, $if_match, $set_filter_state_body, $contentType)
+        return $this->managementSetMailboxFiltersAsyncWithHttpInfo(
+            $public_id,
+            $if_match,
+            $set_filter_state_body,
+            $contentType
+        )
             ->then(
                 function ($response) {
                     return $response[0];
@@ -664,9 +717,9 @@ class MailboxFiltersApi
      *
      * Replace mailbox sender filters
      *
-     * @param  string $public_id (required)
-     * @param  string|null $if_match (optional)
-     * @param  \Sendmux\Management\Model\SetFilterStateBody|null $set_filter_state_body (optional)
+     * @param  string $public_id public_id (required)
+     * @param  string|null $if_match if_match (optional)
+     * @param  \Sendmux\Management\Model\SetFilterStateBody|null $set_filter_state_body set_filter_state_body (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementSetMailboxFilters'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -679,7 +732,12 @@ class MailboxFiltersApi
         string $contentType = self::contentTypes['managementSetMailboxFilters'][0]
     ): PromiseInterface {
         $returnType = '\Sendmux\Management\Model\FilterStateResponse';
-        $request = $this->managementSetMailboxFiltersRequest($public_id, $if_match, $set_filter_state_body, $contentType);
+        $request = $this->managementSetMailboxFiltersRequest(
+            $public_id,
+            $if_match,
+            $set_filter_state_body,
+            $contentType
+        );
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -701,18 +759,34 @@ class MailboxFiltersApi
                     ];
                 },
                 function ($exception) {
-                    $response = $exception->getResponse();
-                    $statusCode = $response->getStatusCode();
-                    throw new ApiException(
-                        sprintf(
-                            '[%d] Error connecting to the API (%s)',
-                            $statusCode,
-                            $exception->getRequest()->getUri()
-                        ),
-                        $statusCode,
-                        $response->getHeaders(),
-                        (string) $response->getBody()
-                    );
+                    if ($exception instanceof RequestException) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            $exception->getResponse() ? $exception->getResponse()->getHeaders() : null,
+                            $exception->getResponse() ? (string) $exception->getResponse()->getBody() : null
+                        );
+                    }
+
+                    if ($exception instanceof ConnectException) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            null,
+                            null
+                        );
+                    }
+
+                    if ($exception instanceof \Throwable) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            null,
+                            null
+                        );
+                    }
+
+                    throw new ApiException('[0] Unknown API error', 0, null, null);
                 }
             );
     }
@@ -720,9 +794,9 @@ class MailboxFiltersApi
     /**
      * Create request for operation 'managementSetMailboxFilters'
      *
-     * @param  string $public_id (required)
-     * @param  string|null $if_match (optional)
-     * @param  \Sendmux\Management\Model\SetFilterStateBody|null $set_filter_state_body (optional)
+     * @param  string $public_id public_id (required)
+     * @param  string|null $if_match if_match (optional)
+     * @param  \Sendmux\Management\Model\SetFilterStateBody|null $set_filter_state_body set_filter_state_body (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementSetMailboxFilters'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException

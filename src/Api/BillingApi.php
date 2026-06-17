@@ -148,7 +148,10 @@ class BillingApi
         ?string $days = null,
         string $contentType = self::contentTypes['managementGetSpendSummary'][0]
     ): \Sendmux\Management\Model\SpendSummaryResponse|\Sendmux\Management\Model\ApiError {
-        list($response) = $this->managementGetSpendSummaryWithHttpInfo($days, $contentType);
+        list($response) = $this->managementGetSpendSummaryWithHttpInfo(
+            $days,
+            $contentType
+        );
         return $response;
     }
 
@@ -157,7 +160,7 @@ class BillingApi
      *
      * Get spend summary
      *
-     * @param  string|null $days (optional)
+     * @param  string|null $days days (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementGetSpendSummary'] to see the possible values for this operation
      *
      * @throws ApiException on non-2xx response or if the response body is not in the expected format
@@ -168,7 +171,10 @@ class BillingApi
         ?string $days = null,
         string $contentType = self::contentTypes['managementGetSpendSummary'][0]
     ): array {
-        $request = $this->managementGetSpendSummaryRequest($days, $contentType);
+        $request = $this->managementGetSpendSummaryRequest(
+            $days,
+            $contentType
+        );
 
         try {
             $options = $this->createHttpClientOption();
@@ -269,7 +275,7 @@ class BillingApi
      *
      * Get spend summary
      *
-     * @param  string|null $days (optional)
+     * @param  string|null $days days (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementGetSpendSummary'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -279,7 +285,10 @@ class BillingApi
         ?string $days = null,
         string $contentType = self::contentTypes['managementGetSpendSummary'][0]
     ): PromiseInterface {
-        return $this->managementGetSpendSummaryAsyncWithHttpInfo($days, $contentType)
+        return $this->managementGetSpendSummaryAsyncWithHttpInfo(
+            $days,
+            $contentType
+        )
             ->then(
                 function ($response) {
                     return $response[0];
@@ -292,7 +301,7 @@ class BillingApi
      *
      * Get spend summary
      *
-     * @param  string|null $days (optional)
+     * @param  string|null $days days (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementGetSpendSummary'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -303,7 +312,10 @@ class BillingApi
         string $contentType = self::contentTypes['managementGetSpendSummary'][0]
     ): PromiseInterface {
         $returnType = '\Sendmux\Management\Model\SpendSummaryResponse';
-        $request = $this->managementGetSpendSummaryRequest($days, $contentType);
+        $request = $this->managementGetSpendSummaryRequest(
+            $days,
+            $contentType
+        );
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -325,18 +337,34 @@ class BillingApi
                     ];
                 },
                 function ($exception) {
-                    $response = $exception->getResponse();
-                    $statusCode = $response->getStatusCode();
-                    throw new ApiException(
-                        sprintf(
-                            '[%d] Error connecting to the API (%s)',
-                            $statusCode,
-                            $exception->getRequest()->getUri()
-                        ),
-                        $statusCode,
-                        $response->getHeaders(),
-                        (string) $response->getBody()
-                    );
+                    if ($exception instanceof RequestException) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            $exception->getResponse() ? $exception->getResponse()->getHeaders() : null,
+                            $exception->getResponse() ? (string) $exception->getResponse()->getBody() : null
+                        );
+                    }
+
+                    if ($exception instanceof ConnectException) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            null,
+                            null
+                        );
+                    }
+
+                    if ($exception instanceof \Throwable) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            null,
+                            null
+                        );
+                    }
+
+                    throw new ApiException('[0] Unknown API error', 0, null, null);
                 }
             );
     }
@@ -344,7 +372,7 @@ class BillingApi
     /**
      * Create request for operation 'managementGetSpendSummary'
      *
-     * @param  string|null $days (optional)
+     * @param  string|null $days days (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementGetSpendSummary'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -447,7 +475,9 @@ class BillingApi
     public function managementListBalance(
         string $contentType = self::contentTypes['managementListBalance'][0]
     ): \Sendmux\Management\Model\BalanceResponse|\Sendmux\Management\Model\ApiError {
-        list($response) = $this->managementListBalanceWithHttpInfo($contentType);
+        list($response) = $this->managementListBalanceWithHttpInfo(
+            $contentType
+        );
         return $response;
     }
 
@@ -465,7 +495,9 @@ class BillingApi
     public function managementListBalanceWithHttpInfo(
         string $contentType = self::contentTypes['managementListBalance'][0]
     ): array {
-        $request = $this->managementListBalanceRequest($contentType);
+        $request = $this->managementListBalanceRequest(
+            $contentType
+        );
 
         try {
             $options = $this->createHttpClientOption();
@@ -574,7 +606,9 @@ class BillingApi
     public function managementListBalanceAsync(
         string $contentType = self::contentTypes['managementListBalance'][0]
     ): PromiseInterface {
-        return $this->managementListBalanceAsyncWithHttpInfo($contentType)
+        return $this->managementListBalanceAsyncWithHttpInfo(
+            $contentType
+        )
             ->then(
                 function ($response) {
                     return $response[0];
@@ -596,7 +630,9 @@ class BillingApi
         string $contentType = self::contentTypes['managementListBalance'][0]
     ): PromiseInterface {
         $returnType = '\Sendmux\Management\Model\BalanceResponse';
-        $request = $this->managementListBalanceRequest($contentType);
+        $request = $this->managementListBalanceRequest(
+            $contentType
+        );
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -618,18 +654,34 @@ class BillingApi
                     ];
                 },
                 function ($exception) {
-                    $response = $exception->getResponse();
-                    $statusCode = $response->getStatusCode();
-                    throw new ApiException(
-                        sprintf(
-                            '[%d] Error connecting to the API (%s)',
-                            $statusCode,
-                            $exception->getRequest()->getUri()
-                        ),
-                        $statusCode,
-                        $response->getHeaders(),
-                        (string) $response->getBody()
-                    );
+                    if ($exception instanceof RequestException) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            $exception->getResponse() ? $exception->getResponse()->getHeaders() : null,
+                            $exception->getResponse() ? (string) $exception->getResponse()->getBody() : null
+                        );
+                    }
+
+                    if ($exception instanceof ConnectException) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            null,
+                            null
+                        );
+                    }
+
+                    if ($exception instanceof \Throwable) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            null,
+                            null
+                        );
+                    }
+
+                    throw new ApiException('[0] Unknown API error', 0, null, null);
                 }
             );
     }
@@ -734,7 +786,12 @@ class BillingApi
         ?string $type = null,
         string $contentType = self::contentTypes['managementListTransactions'][0]
     ): \Sendmux\Management\Model\TransactionCursorListResponse|\Sendmux\Management\Model\ApiError {
-        list($response) = $this->managementListTransactionsWithHttpInfo($cursor, $limit, $type, $contentType);
+        list($response) = $this->managementListTransactionsWithHttpInfo(
+            $cursor,
+            $limit,
+            $type,
+            $contentType
+        );
         return $response;
     }
 
@@ -743,9 +800,9 @@ class BillingApi
      *
      * List transactions
      *
-     * @param  string|null $cursor (optional)
-     * @param  int|null $limit (optional)
-     * @param  string|null $type (optional)
+     * @param  string|null $cursor cursor (optional)
+     * @param  int|null $limit limit (optional)
+     * @param  string|null $type type (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementListTransactions'] to see the possible values for this operation
      *
      * @throws ApiException on non-2xx response or if the response body is not in the expected format
@@ -758,7 +815,12 @@ class BillingApi
         ?string $type = null,
         string $contentType = self::contentTypes['managementListTransactions'][0]
     ): array {
-        $request = $this->managementListTransactionsRequest($cursor, $limit, $type, $contentType);
+        $request = $this->managementListTransactionsRequest(
+            $cursor,
+            $limit,
+            $type,
+            $contentType
+        );
 
         try {
             $options = $this->createHttpClientOption();
@@ -859,9 +921,9 @@ class BillingApi
      *
      * List transactions
      *
-     * @param  string|null $cursor (optional)
-     * @param  int|null $limit (optional)
-     * @param  string|null $type (optional)
+     * @param  string|null $cursor cursor (optional)
+     * @param  int|null $limit limit (optional)
+     * @param  string|null $type type (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementListTransactions'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -873,7 +935,12 @@ class BillingApi
         ?string $type = null,
         string $contentType = self::contentTypes['managementListTransactions'][0]
     ): PromiseInterface {
-        return $this->managementListTransactionsAsyncWithHttpInfo($cursor, $limit, $type, $contentType)
+        return $this->managementListTransactionsAsyncWithHttpInfo(
+            $cursor,
+            $limit,
+            $type,
+            $contentType
+        )
             ->then(
                 function ($response) {
                     return $response[0];
@@ -886,9 +953,9 @@ class BillingApi
      *
      * List transactions
      *
-     * @param  string|null $cursor (optional)
-     * @param  int|null $limit (optional)
-     * @param  string|null $type (optional)
+     * @param  string|null $cursor cursor (optional)
+     * @param  int|null $limit limit (optional)
+     * @param  string|null $type type (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementListTransactions'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
@@ -901,7 +968,12 @@ class BillingApi
         string $contentType = self::contentTypes['managementListTransactions'][0]
     ): PromiseInterface {
         $returnType = '\Sendmux\Management\Model\TransactionCursorListResponse';
-        $request = $this->managementListTransactionsRequest($cursor, $limit, $type, $contentType);
+        $request = $this->managementListTransactionsRequest(
+            $cursor,
+            $limit,
+            $type,
+            $contentType
+        );
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -923,18 +995,34 @@ class BillingApi
                     ];
                 },
                 function ($exception) {
-                    $response = $exception->getResponse();
-                    $statusCode = $response->getStatusCode();
-                    throw new ApiException(
-                        sprintf(
-                            '[%d] Error connecting to the API (%s)',
-                            $statusCode,
-                            $exception->getRequest()->getUri()
-                        ),
-                        $statusCode,
-                        $response->getHeaders(),
-                        (string) $response->getBody()
-                    );
+                    if ($exception instanceof RequestException) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            $exception->getResponse() ? $exception->getResponse()->getHeaders() : null,
+                            $exception->getResponse() ? (string) $exception->getResponse()->getBody() : null
+                        );
+                    }
+
+                    if ($exception instanceof ConnectException) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            null,
+                            null
+                        );
+                    }
+
+                    if ($exception instanceof \Throwable) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            null,
+                            null
+                        );
+                    }
+
+                    throw new ApiException('[0] Unknown API error', 0, null, null);
                 }
             );
     }
@@ -942,9 +1030,9 @@ class BillingApi
     /**
      * Create request for operation 'managementListTransactions'
      *
-     * @param  string|null $cursor (optional)
-     * @param  int|null $limit (optional)
-     * @param  string|null $type (optional)
+     * @param  string|null $cursor cursor (optional)
+     * @param  int|null $limit limit (optional)
+     * @param  string|null $type type (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['managementListTransactions'] to see the possible values for this operation
      *
      * @throws InvalidArgumentException
