@@ -1,7 +1,7 @@
 <?php
 
 /**
- * MailboxDomainDnsRecords
+ * UpdateMailboxBodySendScope
  *
  * PHP version 8.1
  *
@@ -35,14 +35,15 @@ use ReturnTypeWillChange;
 use Sendmux\Management\ObjectSerializer;
 
 /**
- * MailboxDomainDnsRecords Class Doc Comment
+ * UpdateMailboxBodySendScope Class Doc Comment
  *
+ * @description Replace outbound routing restrictions.
  * @package  Sendmux\Management
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  * @implements ArrayAccess<string, mixed>
  */
-class MailboxDomainDnsRecords implements ModelInterface, ArrayAccess, JsonSerializable
+class UpdateMailboxBodySendScope implements ModelInterface, ArrayAccess, JsonSerializable
 {
     public const DISCRIMINATOR = null;
 
@@ -51,7 +52,7 @@ class MailboxDomainDnsRecords implements ModelInterface, ArrayAccess, JsonSerial
      *
      * @var string
      */
-    protected static string $openAPIModelName = 'MailboxDomainDnsRecords';
+    protected static string $openAPIModelName = 'UpdateMailboxBody_send_scope';
 
     /**
      * Array of property to type mappings. Used for (de)serialization
@@ -59,12 +60,9 @@ class MailboxDomainDnsRecords implements ModelInterface, ArrayAccess, JsonSerial
      * @var array<string, string>
      */
     protected static array $openAPITypes = [
-        'dkim' => '\Sendmux\Management\Model\MailboxDomainNameValueRecord[]',
-        'dmarc' => '\Sendmux\Management\Model\MailboxDomainNameValueRecord',
-        'mail_from' => '\Sendmux\Management\Model\MailboxDomainMailFromRecords',
-        'mx' => '\Sendmux\Management\Model\MailboxDomainMxRecord[]',
-        'spf' => '\Sendmux\Management\Model\MailboxDomainNameValueRecord',
-        'verification' => '\Sendmux\Management\Model\MailboxDomainNameValueRecord'
+        'group_public_ids' => 'string[]',
+        'provider_public_ids' => 'string[]',
+        'type' => 'string'
     ];
 
     /**
@@ -73,12 +71,9 @@ class MailboxDomainDnsRecords implements ModelInterface, ArrayAccess, JsonSerial
      * @var array<string, string|null>
      */
     protected static array $openAPIFormats = [
-        'dkim' => null,
-        'dmarc' => null,
-        'mail_from' => null,
-        'mx' => null,
-        'spf' => null,
-        'verification' => null
+        'group_public_ids' => null,
+        'provider_public_ids' => null,
+        'type' => null
     ];
 
     /**
@@ -87,12 +82,9 @@ class MailboxDomainDnsRecords implements ModelInterface, ArrayAccess, JsonSerial
      * @var array<string, bool>
      */
     protected static array $openAPINullables = [
-        'dkim' => false,
-        'dmarc' => false,
-        'mail_from' => false,
-        'mx' => false,
-        'spf' => false,
-        'verification' => false
+        'group_public_ids' => false,
+        'provider_public_ids' => false,
+        'type' => false
     ];
 
     /**
@@ -171,12 +163,9 @@ class MailboxDomainDnsRecords implements ModelInterface, ArrayAccess, JsonSerial
      * @var array<string, string>
      */
     protected static array $attributeMap = [
-        'dkim' => 'dkim',
-        'dmarc' => 'dmarc',
-        'mail_from' => 'mail_from',
-        'mx' => 'mx',
-        'spf' => 'spf',
-        'verification' => 'verification'
+        'group_public_ids' => 'group_public_ids',
+        'provider_public_ids' => 'provider_public_ids',
+        'type' => 'type'
     ];
 
     /**
@@ -185,12 +174,9 @@ class MailboxDomainDnsRecords implements ModelInterface, ArrayAccess, JsonSerial
      * @var array<string, string>
      */
     protected static array $setters = [
-        'dkim' => 'setDkim',
-        'dmarc' => 'setDmarc',
-        'mail_from' => 'setMailFrom',
-        'mx' => 'setMx',
-        'spf' => 'setSpf',
-        'verification' => 'setVerification'
+        'group_public_ids' => 'setGroupPublicIds',
+        'provider_public_ids' => 'setProviderPublicIds',
+        'type' => 'setType'
     ];
 
     /**
@@ -199,12 +185,9 @@ class MailboxDomainDnsRecords implements ModelInterface, ArrayAccess, JsonSerial
      * @var array<string, string>
      */
     protected static array $getters = [
-        'dkim' => 'getDkim',
-        'dmarc' => 'getDmarc',
-        'mail_from' => 'getMailFrom',
-        'mx' => 'getMx',
-        'spf' => 'getSpf',
-        'verification' => 'getVerification'
+        'group_public_ids' => 'getGroupPublicIds',
+        'provider_public_ids' => 'getProviderPublicIds',
+        'type' => 'getType'
     ];
 
     /**
@@ -239,6 +222,25 @@ class MailboxDomainDnsRecords implements ModelInterface, ArrayAccess, JsonSerial
         return self::$openAPIModelName;
     }
 
+    public const TYPE_ALL = 'all';
+    public const TYPE_PROVIDERS = 'providers';
+    public const TYPE_GROUP = 'group';
+    public const TYPE_UNKNOWN_DEFAULT_OPEN_API = 'unknown_default_open_api';
+
+    /**
+     * Gets allowable values of the enum
+     *
+     * @return string[]
+     */
+    public static function getTypeAllowableValues()
+    {
+        return [
+            self::TYPE_ALL,
+            self::TYPE_PROVIDERS,
+            self::TYPE_GROUP,
+            self::TYPE_UNKNOWN_DEFAULT_OPEN_API,
+        ];
+    }
 
     /**
      * Associative array for storing property values
@@ -254,12 +256,9 @@ class MailboxDomainDnsRecords implements ModelInterface, ArrayAccess, JsonSerial
      */
     public function __construct(?array $data = null)
     {
-        $this->setIfExists('dkim', $data ?? [], null);
-        $this->setIfExists('dmarc', $data ?? [], null);
-        $this->setIfExists('mail_from', $data ?? [], null);
-        $this->setIfExists('mx', $data ?? [], null);
-        $this->setIfExists('spf', $data ?? [], null);
-        $this->setIfExists('verification', $data ?? [], null);
+        $this->setIfExists('group_public_ids', $data ?? [], null);
+        $this->setIfExists('provider_public_ids', $data ?? [], null);
+        $this->setIfExists('type', $data ?? [], null);
     }
 
     /**
@@ -287,24 +286,18 @@ class MailboxDomainDnsRecords implements ModelInterface, ArrayAccess, JsonSerial
     {
         $invalidProperties = [];
 
-        if ($this->container['dkim'] === null) {
-            $invalidProperties[] = "'dkim' can't be null";
+        if ($this->container['type'] === null) {
+            $invalidProperties[] = "'type' can't be null";
         }
-        if ($this->container['dmarc'] === null) {
-            $invalidProperties[] = "'dmarc' can't be null";
+        $allowedValues = self::getTypeAllowableValues();
+        if (!is_null($this->container['type']) && !in_array($this->container['type'], $allowedValues, true)) {
+            $invalidProperties[] = sprintf(
+                "invalid value '%s' for 'type', must be one of '%s'",
+                $this->container['type'],
+                implode("', '", $allowedValues)
+            );
         }
-        if ($this->container['mail_from'] === null) {
-            $invalidProperties[] = "'mail_from' can't be null";
-        }
-        if ($this->container['mx'] === null) {
-            $invalidProperties[] = "'mx' can't be null";
-        }
-        if ($this->container['spf'] === null) {
-            $invalidProperties[] = "'spf' can't be null";
-        }
-        if ($this->container['verification'] === null) {
-            $invalidProperties[] = "'verification' can't be null";
-        }
+
         return $invalidProperties;
     }
 
@@ -318,163 +311,86 @@ class MailboxDomainDnsRecords implements ModelInterface, ArrayAccess, JsonSerial
 
 
     /**
-     * Gets dkim
+     * Gets group_public_ids
      *
-     * @return \Sendmux\Management\Model\MailboxDomainNameValueRecord[]
+     * @return string[]|null
      */
-    public function getDkim(): array
+    public function getGroupPublicIds(): ?array
     {
-        return $this->container['dkim'];
+        return $this->container['group_public_ids'];
     }
 
     /**
-     * Sets dkim
+     * Sets group_public_ids
      *
-     * @param \Sendmux\Management\Model\MailboxDomainNameValueRecord[] $dkim Three Amazon SES DKIM CNAME records
+     * @param string[]|null $group_public_ids Delivery group public IDs allowed for sending when type is `group`.
      *
      * @return $this
      */
-    public function setDkim(array $dkim): static
+    public function setGroupPublicIds(?array $group_public_ids): static
     {
-        if (is_null($dkim)) {
-            throw new InvalidArgumentException('non-nullable dkim cannot be null');
+        if (is_null($group_public_ids)) {
+            throw new InvalidArgumentException('non-nullable group_public_ids cannot be null');
         }
-        $this->container['dkim'] = $dkim;
+        $this->container['group_public_ids'] = $group_public_ids;
 
         return $this;
     }
 
     /**
-     * Gets dmarc
+     * Gets provider_public_ids
      *
-     * @return \Sendmux\Management\Model\MailboxDomainNameValueRecord
+     * @return string[]|null
      */
-    public function getDmarc(): \Sendmux\Management\Model\MailboxDomainNameValueRecord
+    public function getProviderPublicIds(): ?array
     {
-        return $this->container['dmarc'];
+        return $this->container['provider_public_ids'];
     }
 
     /**
-     * Sets dmarc
+     * Sets provider_public_ids
      *
-     * @param \Sendmux\Management\Model\MailboxDomainNameValueRecord $dmarc DMARC enforcement record (quarantine, no reporting)
+     * @param string[]|null $provider_public_ids Provider public IDs allowed for sending when type is `providers`.
      *
      * @return $this
      */
-    public function setDmarc(\Sendmux\Management\Model\MailboxDomainNameValueRecord $dmarc): static
+    public function setProviderPublicIds(?array $provider_public_ids): static
     {
-        if (is_null($dmarc)) {
-            throw new InvalidArgumentException('non-nullable dmarc cannot be null');
+        if (is_null($provider_public_ids)) {
+            throw new InvalidArgumentException('non-nullable provider_public_ids cannot be null');
         }
-        $this->container['dmarc'] = $dmarc;
+        $this->container['provider_public_ids'] = $provider_public_ids;
 
         return $this;
     }
 
     /**
-     * Gets mail_from
+     * Gets type
      *
-     * @return \Sendmux\Management\Model\MailboxDomainMailFromRecords
+     * @return string
      */
-    public function getMailFrom(): \Sendmux\Management\Model\MailboxDomainMailFromRecords
+    public function getType(): string
     {
-        return $this->container['mail_from'];
+        return $this->container['type'];
     }
 
     /**
-     * Sets mail_from
+     * Sets type
      *
-     * @param \Sendmux\Management\Model\MailboxDomainMailFromRecords $mail_from mail_from
+     * @param string $type Outbound routing strategy. Use `providers` with provider_public_ids, or `group` with group_public_ids.
      *
      * @return $this
      */
-    public function setMailFrom(\Sendmux\Management\Model\MailboxDomainMailFromRecords $mail_from): static
+    public function setType(string $type): static
     {
-        if (is_null($mail_from)) {
-            throw new InvalidArgumentException('non-nullable mail_from cannot be null');
+        if (is_null($type)) {
+            throw new InvalidArgumentException('non-nullable type cannot be null');
         }
-        $this->container['mail_from'] = $mail_from;
-
-        return $this;
-    }
-
-    /**
-     * Gets mx
-     *
-     * @return \Sendmux\Management\Model\MailboxDomainMxRecord[]
-     */
-    public function getMx(): array
-    {
-        return $this->container['mx'];
-    }
-
-    /**
-     * Sets mx
-     *
-     * @param \Sendmux\Management\Model\MailboxDomainMxRecord[] $mx MX records the customer must place. All point at Sendmux's inbound mail servers.
-     *
-     * @return $this
-     */
-    public function setMx(array $mx): static
-    {
-        if (is_null($mx)) {
-            throw new InvalidArgumentException('non-nullable mx cannot be null');
+        $allowedValues = self::getTypeAllowableValues();
+        if (!in_array($type, $allowedValues, true)) {
+            $type = self::TYPE_UNKNOWN_DEFAULT_OPEN_API;
         }
-        $this->container['mx'] = $mx;
-
-        return $this;
-    }
-
-    /**
-     * Gets spf
-     *
-     * @return \Sendmux\Management\Model\MailboxDomainNameValueRecord
-     */
-    public function getSpf(): \Sendmux\Management\Model\MailboxDomainNameValueRecord
-    {
-        return $this->container['spf'];
-    }
-
-    /**
-     * Sets spf
-     *
-     * @param \Sendmux\Management\Model\MailboxDomainNameValueRecord $spf SPF TXT record covering Amazon SES sending
-     *
-     * @return $this
-     */
-    public function setSpf(\Sendmux\Management\Model\MailboxDomainNameValueRecord $spf): static
-    {
-        if (is_null($spf)) {
-            throw new InvalidArgumentException('non-nullable spf cannot be null');
-        }
-        $this->container['spf'] = $spf;
-
-        return $this;
-    }
-
-    /**
-     * Gets verification
-     *
-     * @return \Sendmux\Management\Model\MailboxDomainNameValueRecord
-     */
-    public function getVerification(): \Sendmux\Management\Model\MailboxDomainNameValueRecord
-    {
-        return $this->container['verification'];
-    }
-
-    /**
-     * Sets verification
-     *
-     * @param \Sendmux\Management\Model\MailboxDomainNameValueRecord $verification Ownership-proof TXT record (Sendmux-specific)
-     *
-     * @return $this
-     */
-    public function setVerification(\Sendmux\Management\Model\MailboxDomainNameValueRecord $verification): static
-    {
-        if (is_null($verification)) {
-            throw new InvalidArgumentException('non-nullable verification cannot be null');
-        }
-        $this->container['verification'] = $verification;
+        $this->container['type'] = $type;
 
         return $this;
     }

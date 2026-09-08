@@ -60,7 +60,12 @@ class MailboxDomainVerifyResult implements ModelInterface, ArrayAccess, JsonSeri
      */
     protected static array $openAPITypes = [
         'checks' => '\Sendmux\Management\Model\MailboxDomainVerifyChecks',
+        'ses_dkim_signing_enabled' => 'bool',
         'ses_dkim_status' => 'string',
+        'ses_identity_checked_at' => 'string',
+        'ses_identity_verification_status' => 'string',
+        'ses_mail_from_status' => 'string',
+        'ses_verified_for_sending' => 'bool',
         'status' => 'string'
     ];
 
@@ -71,7 +76,12 @@ class MailboxDomainVerifyResult implements ModelInterface, ArrayAccess, JsonSeri
      */
     protected static array $openAPIFormats = [
         'checks' => null,
+        'ses_dkim_signing_enabled' => null,
         'ses_dkim_status' => null,
+        'ses_identity_checked_at' => null,
+        'ses_identity_verification_status' => null,
+        'ses_mail_from_status' => null,
+        'ses_verified_for_sending' => null,
         'status' => null
     ];
 
@@ -82,7 +92,12 @@ class MailboxDomainVerifyResult implements ModelInterface, ArrayAccess, JsonSeri
      */
     protected static array $openAPINullables = [
         'checks' => false,
+        'ses_dkim_signing_enabled' => false,
         'ses_dkim_status' => false,
+        'ses_identity_checked_at' => false,
+        'ses_identity_verification_status' => false,
+        'ses_mail_from_status' => false,
+        'ses_verified_for_sending' => false,
         'status' => false
     ];
 
@@ -163,7 +178,12 @@ class MailboxDomainVerifyResult implements ModelInterface, ArrayAccess, JsonSeri
      */
     protected static array $attributeMap = [
         'checks' => 'checks',
+        'ses_dkim_signing_enabled' => 'ses_dkim_signing_enabled',
         'ses_dkim_status' => 'ses_dkim_status',
+        'ses_identity_checked_at' => 'ses_identity_checked_at',
+        'ses_identity_verification_status' => 'ses_identity_verification_status',
+        'ses_mail_from_status' => 'ses_mail_from_status',
+        'ses_verified_for_sending' => 'ses_verified_for_sending',
         'status' => 'status'
     ];
 
@@ -174,7 +194,12 @@ class MailboxDomainVerifyResult implements ModelInterface, ArrayAccess, JsonSeri
      */
     protected static array $setters = [
         'checks' => 'setChecks',
+        'ses_dkim_signing_enabled' => 'setSesDkimSigningEnabled',
         'ses_dkim_status' => 'setSesDkimStatus',
+        'ses_identity_checked_at' => 'setSesIdentityCheckedAt',
+        'ses_identity_verification_status' => 'setSesIdentityVerificationStatus',
+        'ses_mail_from_status' => 'setSesMailFromStatus',
+        'ses_verified_for_sending' => 'setSesVerifiedForSending',
         'status' => 'setStatus'
     ];
 
@@ -185,7 +210,12 @@ class MailboxDomainVerifyResult implements ModelInterface, ArrayAccess, JsonSeri
      */
     protected static array $getters = [
         'checks' => 'getChecks',
+        'ses_dkim_signing_enabled' => 'getSesDkimSigningEnabled',
         'ses_dkim_status' => 'getSesDkimStatus',
+        'ses_identity_checked_at' => 'getSesIdentityCheckedAt',
+        'ses_identity_verification_status' => 'getSesIdentityVerificationStatus',
+        'ses_mail_from_status' => 'getSesMailFromStatus',
+        'ses_verified_for_sending' => 'getSesVerifiedForSending',
         'status' => 'getStatus'
     ];
 
@@ -223,6 +253,7 @@ class MailboxDomainVerifyResult implements ModelInterface, ArrayAccess, JsonSeri
 
     public const STATUS_VERIFIED = 'verified';
     public const STATUS_PENDING = 'pending';
+    public const STATUS_FAILED = 'failed';
     public const STATUS_UNKNOWN_DEFAULT_OPEN_API = 'unknown_default_open_api';
 
     /**
@@ -235,6 +266,7 @@ class MailboxDomainVerifyResult implements ModelInterface, ArrayAccess, JsonSeri
         return [
             self::STATUS_VERIFIED,
             self::STATUS_PENDING,
+            self::STATUS_FAILED,
             self::STATUS_UNKNOWN_DEFAULT_OPEN_API,
         ];
     }
@@ -254,7 +286,12 @@ class MailboxDomainVerifyResult implements ModelInterface, ArrayAccess, JsonSeri
     public function __construct(?array $data = null)
     {
         $this->setIfExists('checks', $data ?? [], null);
+        $this->setIfExists('ses_dkim_signing_enabled', $data ?? [], null);
         $this->setIfExists('ses_dkim_status', $data ?? [], null);
+        $this->setIfExists('ses_identity_checked_at', $data ?? [], null);
+        $this->setIfExists('ses_identity_verification_status', $data ?? [], null);
+        $this->setIfExists('ses_mail_from_status', $data ?? [], null);
+        $this->setIfExists('ses_verified_for_sending', $data ?? [], null);
         $this->setIfExists('status', $data ?? [], null);
     }
 
@@ -286,8 +323,23 @@ class MailboxDomainVerifyResult implements ModelInterface, ArrayAccess, JsonSeri
         if ($this->container['checks'] === null) {
             $invalidProperties[] = "'checks' can't be null";
         }
+        if ($this->container['ses_dkim_signing_enabled'] === null) {
+            $invalidProperties[] = "'ses_dkim_signing_enabled' can't be null";
+        }
         if ($this->container['ses_dkim_status'] === null) {
             $invalidProperties[] = "'ses_dkim_status' can't be null";
+        }
+        if ($this->container['ses_identity_checked_at'] === null) {
+            $invalidProperties[] = "'ses_identity_checked_at' can't be null";
+        }
+        if ($this->container['ses_identity_verification_status'] === null) {
+            $invalidProperties[] = "'ses_identity_verification_status' can't be null";
+        }
+        if ($this->container['ses_mail_from_status'] === null) {
+            $invalidProperties[] = "'ses_mail_from_status' can't be null";
+        }
+        if ($this->container['ses_verified_for_sending'] === null) {
+            $invalidProperties[] = "'ses_verified_for_sending' can't be null";
         }
         if ($this->container['status'] === null) {
             $invalidProperties[] = "'status' can't be null";
@@ -341,6 +393,33 @@ class MailboxDomainVerifyResult implements ModelInterface, ArrayAccess, JsonSeri
     }
 
     /**
+     * Gets ses_dkim_signing_enabled
+     *
+     * @return bool
+     */
+    public function getSesDkimSigningEnabled(): bool
+    {
+        return $this->container['ses_dkim_signing_enabled'];
+    }
+
+    /**
+     * Sets ses_dkim_signing_enabled
+     *
+     * @param bool $ses_dkim_signing_enabled Whether Amazon SES DKIM signing is enabled
+     *
+     * @return $this
+     */
+    public function setSesDkimSigningEnabled(bool $ses_dkim_signing_enabled): static
+    {
+        if (is_null($ses_dkim_signing_enabled)) {
+            throw new InvalidArgumentException('non-nullable ses_dkim_signing_enabled cannot be null');
+        }
+        $this->container['ses_dkim_signing_enabled'] = $ses_dkim_signing_enabled;
+
+        return $this;
+    }
+
+    /**
      * Gets ses_dkim_status
      *
      * @return string
@@ -363,6 +442,114 @@ class MailboxDomainVerifyResult implements ModelInterface, ArrayAccess, JsonSeri
             throw new InvalidArgumentException('non-nullable ses_dkim_status cannot be null');
         }
         $this->container['ses_dkim_status'] = $ses_dkim_status;
+
+        return $this;
+    }
+
+    /**
+     * Gets ses_identity_checked_at
+     *
+     * @return string
+     */
+    public function getSesIdentityCheckedAt(): string
+    {
+        return $this->container['ses_identity_checked_at'];
+    }
+
+    /**
+     * Sets ses_identity_checked_at
+     *
+     * @param string $ses_identity_checked_at ISO 8601 time of this SES identity check
+     *
+     * @return $this
+     */
+    public function setSesIdentityCheckedAt(string $ses_identity_checked_at): static
+    {
+        if (is_null($ses_identity_checked_at)) {
+            throw new InvalidArgumentException('non-nullable ses_identity_checked_at cannot be null');
+        }
+        $this->container['ses_identity_checked_at'] = $ses_identity_checked_at;
+
+        return $this;
+    }
+
+    /**
+     * Gets ses_identity_verification_status
+     *
+     * @return string
+     */
+    public function getSesIdentityVerificationStatus(): string
+    {
+        return $this->container['ses_identity_verification_status'];
+    }
+
+    /**
+     * Sets ses_identity_verification_status
+     *
+     * @param string $ses_identity_verification_status Latest Amazon SES identity status
+     *
+     * @return $this
+     */
+    public function setSesIdentityVerificationStatus(string $ses_identity_verification_status): static
+    {
+        if (is_null($ses_identity_verification_status)) {
+            throw new InvalidArgumentException('non-nullable ses_identity_verification_status cannot be null');
+        }
+        $this->container['ses_identity_verification_status'] = $ses_identity_verification_status;
+
+        return $this;
+    }
+
+    /**
+     * Gets ses_mail_from_status
+     *
+     * @return string
+     */
+    public function getSesMailFromStatus(): string
+    {
+        return $this->container['ses_mail_from_status'];
+    }
+
+    /**
+     * Sets ses_mail_from_status
+     *
+     * @param string $ses_mail_from_status Latest Amazon SES MAIL FROM status
+     *
+     * @return $this
+     */
+    public function setSesMailFromStatus(string $ses_mail_from_status): static
+    {
+        if (is_null($ses_mail_from_status)) {
+            throw new InvalidArgumentException('non-nullable ses_mail_from_status cannot be null');
+        }
+        $this->container['ses_mail_from_status'] = $ses_mail_from_status;
+
+        return $this;
+    }
+
+    /**
+     * Gets ses_verified_for_sending
+     *
+     * @return bool
+     */
+    public function getSesVerifiedForSending(): bool
+    {
+        return $this->container['ses_verified_for_sending'];
+    }
+
+    /**
+     * Sets ses_verified_for_sending
+     *
+     * @param bool $ses_verified_for_sending Whether Amazon SES permits identity sending
+     *
+     * @return $this
+     */
+    public function setSesVerifiedForSending(bool $ses_verified_for_sending): static
+    {
+        if (is_null($ses_verified_for_sending)) {
+            throw new InvalidArgumentException('non-nullable ses_verified_for_sending cannot be null');
+        }
+        $this->container['ses_verified_for_sending'] = $ses_verified_for_sending;
 
         return $this;
     }

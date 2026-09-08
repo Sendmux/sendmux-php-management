@@ -895,7 +895,7 @@ class SendingAccountsApi
      *
      * @throws ApiException on non-2xx response or if the response body is not in the expected format
      * @throws InvalidArgumentException
-     * @return array of \Sendmux\Management\Model\ProviderItemResponse|\Sendmux\Management\Model\ApiError|\Sendmux\Management\Model\ApiError, HTTP status code, HTTP response headers (array of strings)
+     * @return array of \Sendmux\Management\Model\ProviderItemResponse|\Sendmux\Management\Model\ApiError|\Sendmux\Management\Model\ApiError|\Sendmux\Management\Model\ApiError, HTTP status code, HTTP response headers (array of strings)
      */
     public function managementCreateProviderWithHttpInfo(
         ?string $idempotency_key = null,
@@ -949,6 +949,12 @@ class SendingAccountsApi
                         $request,
                         $response,
                     );
+                case 413:
+                    return $this->handleResponseWithDataType(
+                        '\Sendmux\Management\Model\ApiError',
+                        $request,
+                        $response,
+                    );
             }
 
 
@@ -989,6 +995,14 @@ class SendingAccountsApi
                     $e->setResponseObject($data);
                     throw $e;
                 case 409:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Sendmux\Management\Model\ApiError',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 413:
                     $data = ObjectSerializer::deserialize(
                         $e->getResponseBody(),
                         '\Sendmux\Management\Model\ApiError',
@@ -1240,7 +1254,7 @@ class SendingAccountsApi
      *
      * @throws ApiException on non-2xx response or if the response body is not in the expected format
      * @throws InvalidArgumentException
-     * @return array of \Sendmux\Management\Model\SharedAmazonSesLimitRequestCreateResponse|\Sendmux\Management\Model\ApiError|\Sendmux\Management\Model\ApiError|\Sendmux\Management\Model\ApiError, HTTP status code, HTTP response headers (array of strings)
+     * @return array of \Sendmux\Management\Model\SharedAmazonSesLimitRequestCreateResponse|\Sendmux\Management\Model\ApiError|\Sendmux\Management\Model\ApiError|\Sendmux\Management\Model\ApiError|\Sendmux\Management\Model\ApiError, HTTP status code, HTTP response headers (array of strings)
      */
     public function managementCreateSharedAmazonSesLimitRequestWithHttpInfo(
         ?string $idempotency_key = null,
@@ -1277,6 +1291,12 @@ class SendingAccountsApi
                 case 200:
                     return $this->handleResponseWithDataType(
                         '\Sendmux\Management\Model\SharedAmazonSesLimitRequestCreateResponse',
+                        $request,
+                        $response,
+                    );
+                case 403:
+                    return $this->handleResponseWithDataType(
+                        '\Sendmux\Management\Model\ApiError',
                         $request,
                         $response,
                     );
@@ -1325,6 +1345,14 @@ class SendingAccountsApi
                     $data = ObjectSerializer::deserialize(
                         $e->getResponseBody(),
                         '\Sendmux\Management\Model\SharedAmazonSesLimitRequestCreateResponse',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 403:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Sendmux\Management\Model\ApiError',
                         $e->getResponseHeaders()
                     );
                     $e->setResponseObject($data);
@@ -4159,7 +4187,7 @@ class SendingAccountsApi
      *
      * @throws ApiException on non-2xx response or if the response body is not in the expected format
      * @throws InvalidArgumentException
-     * @return array of \Sendmux\Management\Model\SendingAccountLimitRequestResponse|\Sendmux\Management\Model\ApiError|\Sendmux\Management\Model\ApiError, HTTP status code, HTTP response headers (array of strings)
+     * @return array of \Sendmux\Management\Model\SendingAccountLimitRequestResponse|\Sendmux\Management\Model\ApiError|\Sendmux\Management\Model\ApiError|\Sendmux\Management\Model\ApiError, HTTP status code, HTTP response headers (array of strings)
      */
     public function managementRequestSendingAccountLimitIncreaseWithHttpInfo(
         ?string $idempotency_key = null,
@@ -4196,6 +4224,12 @@ class SendingAccountsApi
                 case 200:
                     return $this->handleResponseWithDataType(
                         '\Sendmux\Management\Model\SendingAccountLimitRequestResponse',
+                        $request,
+                        $response,
+                    );
+                case 403:
+                    return $this->handleResponseWithDataType(
+                        '\Sendmux\Management\Model\ApiError',
                         $request,
                         $response,
                     );
@@ -4238,6 +4272,14 @@ class SendingAccountsApi
                     $data = ObjectSerializer::deserialize(
                         $e->getResponseBody(),
                         '\Sendmux\Management\Model\SendingAccountLimitRequestResponse',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 403:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Sendmux\Management\Model\ApiError',
                         $e->getResponseHeaders()
                     );
                     $e->setResponseObject($data);
@@ -4864,7 +4906,7 @@ class SendingAccountsApi
      *
      * @throws ApiException on non-2xx response or if the response body is not in the expected format
      * @throws InvalidArgumentException
-     * @return array of \Sendmux\Management\Model\ProviderItemResponse|\Sendmux\Management\Model\ApiError|\Sendmux\Management\Model\ApiError|\Sendmux\Management\Model\ApiError|\Sendmux\Management\Model\ApiError, HTTP status code, HTTP response headers (array of strings)
+     * @return array of \Sendmux\Management\Model\ProviderItemResponse|\Sendmux\Management\Model\ApiError|\Sendmux\Management\Model\ApiError|\Sendmux\Management\Model\ApiError|\Sendmux\Management\Model\ApiError|\Sendmux\Management\Model\ApiError, HTTP status code, HTTP response headers (array of strings)
      */
     public function managementUpdateProviderWithHttpInfo(
         string $public_id,
@@ -4926,6 +4968,12 @@ class SendingAccountsApi
                         $request,
                         $response,
                     );
+                case 413:
+                    return $this->handleResponseWithDataType(
+                        '\Sendmux\Management\Model\ApiError',
+                        $request,
+                        $response,
+                    );
                 case 422:
                     return $this->handleResponseWithDataType(
                         '\Sendmux\Management\Model\ApiError',
@@ -4980,6 +5028,14 @@ class SendingAccountsApi
                     $e->setResponseObject($data);
                     throw $e;
                 case 409:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Sendmux\Management\Model\ApiError',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
+                case 413:
                     $data = ObjectSerializer::deserialize(
                         $e->getResponseBody(),
                         '\Sendmux\Management\Model\ApiError',

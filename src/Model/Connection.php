@@ -1,7 +1,7 @@
 <?php
 
 /**
- * MailboxDomainDnsRecords
+ * Connection
  *
  * PHP version 8.1
  *
@@ -35,14 +35,14 @@ use ReturnTypeWillChange;
 use Sendmux\Management\ObjectSerializer;
 
 /**
- * MailboxDomainDnsRecords Class Doc Comment
+ * Connection Class Doc Comment
  *
  * @package  Sendmux\Management
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  * @implements ArrayAccess<string, mixed>
  */
-class MailboxDomainDnsRecords implements ModelInterface, ArrayAccess, JsonSerializable
+class Connection implements ModelInterface, ArrayAccess, JsonSerializable
 {
     public const DISCRIMINATOR = null;
 
@@ -51,7 +51,7 @@ class MailboxDomainDnsRecords implements ModelInterface, ArrayAccess, JsonSerial
      *
      * @var string
      */
-    protected static string $openAPIModelName = 'MailboxDomainDnsRecords';
+    protected static string $openAPIModelName = 'Connection';
 
     /**
      * Array of property to type mappings. Used for (de)serialization
@@ -59,12 +59,11 @@ class MailboxDomainDnsRecords implements ModelInterface, ArrayAccess, JsonSerial
      * @var array<string, string>
      */
     protected static array $openAPITypes = [
-        'dkim' => '\Sendmux\Management\Model\MailboxDomainNameValueRecord[]',
-        'dmarc' => '\Sendmux\Management\Model\MailboxDomainNameValueRecord',
-        'mail_from' => '\Sendmux\Management\Model\MailboxDomainMailFromRecords',
-        'mx' => '\Sendmux\Management\Model\MailboxDomainMxRecord[]',
-        'spf' => '\Sendmux\Management\Model\MailboxDomainNameValueRecord',
-        'verification' => '\Sendmux\Management\Model\MailboxDomainNameValueRecord'
+        'credential' => '\Sendmux\Management\Model\ConnectionCredential',
+        'label' => 'string',
+        'mailboxes' => '\Sendmux\Management\Model\ConnectionMailboxesInner[]',
+        'permissions' => 'string[]',
+        'team' => '\Sendmux\Management\Model\ConnectionTeam'
     ];
 
     /**
@@ -73,12 +72,11 @@ class MailboxDomainDnsRecords implements ModelInterface, ArrayAccess, JsonSerial
      * @var array<string, string|null>
      */
     protected static array $openAPIFormats = [
-        'dkim' => null,
-        'dmarc' => null,
-        'mail_from' => null,
-        'mx' => null,
-        'spf' => null,
-        'verification' => null
+        'credential' => null,
+        'label' => null,
+        'mailboxes' => null,
+        'permissions' => null,
+        'team' => null
     ];
 
     /**
@@ -87,12 +85,11 @@ class MailboxDomainDnsRecords implements ModelInterface, ArrayAccess, JsonSerial
      * @var array<string, bool>
      */
     protected static array $openAPINullables = [
-        'dkim' => false,
-        'dmarc' => false,
-        'mail_from' => false,
-        'mx' => false,
-        'spf' => false,
-        'verification' => false
+        'credential' => false,
+        'label' => false,
+        'mailboxes' => false,
+        'permissions' => false,
+        'team' => false
     ];
 
     /**
@@ -171,12 +168,11 @@ class MailboxDomainDnsRecords implements ModelInterface, ArrayAccess, JsonSerial
      * @var array<string, string>
      */
     protected static array $attributeMap = [
-        'dkim' => 'dkim',
-        'dmarc' => 'dmarc',
-        'mail_from' => 'mail_from',
-        'mx' => 'mx',
-        'spf' => 'spf',
-        'verification' => 'verification'
+        'credential' => 'credential',
+        'label' => 'label',
+        'mailboxes' => 'mailboxes',
+        'permissions' => 'permissions',
+        'team' => 'team'
     ];
 
     /**
@@ -185,12 +181,11 @@ class MailboxDomainDnsRecords implements ModelInterface, ArrayAccess, JsonSerial
      * @var array<string, string>
      */
     protected static array $setters = [
-        'dkim' => 'setDkim',
-        'dmarc' => 'setDmarc',
-        'mail_from' => 'setMailFrom',
-        'mx' => 'setMx',
-        'spf' => 'setSpf',
-        'verification' => 'setVerification'
+        'credential' => 'setCredential',
+        'label' => 'setLabel',
+        'mailboxes' => 'setMailboxes',
+        'permissions' => 'setPermissions',
+        'team' => 'setTeam'
     ];
 
     /**
@@ -199,12 +194,11 @@ class MailboxDomainDnsRecords implements ModelInterface, ArrayAccess, JsonSerial
      * @var array<string, string>
      */
     protected static array $getters = [
-        'dkim' => 'getDkim',
-        'dmarc' => 'getDmarc',
-        'mail_from' => 'getMailFrom',
-        'mx' => 'getMx',
-        'spf' => 'getSpf',
-        'verification' => 'getVerification'
+        'credential' => 'getCredential',
+        'label' => 'getLabel',
+        'mailboxes' => 'getMailboxes',
+        'permissions' => 'getPermissions',
+        'team' => 'getTeam'
     ];
 
     /**
@@ -254,12 +248,11 @@ class MailboxDomainDnsRecords implements ModelInterface, ArrayAccess, JsonSerial
      */
     public function __construct(?array $data = null)
     {
-        $this->setIfExists('dkim', $data ?? [], null);
-        $this->setIfExists('dmarc', $data ?? [], null);
-        $this->setIfExists('mail_from', $data ?? [], null);
-        $this->setIfExists('mx', $data ?? [], null);
-        $this->setIfExists('spf', $data ?? [], null);
-        $this->setIfExists('verification', $data ?? [], null);
+        $this->setIfExists('credential', $data ?? [], null);
+        $this->setIfExists('label', $data ?? [], null);
+        $this->setIfExists('mailboxes', $data ?? [], null);
+        $this->setIfExists('permissions', $data ?? [], null);
+        $this->setIfExists('team', $data ?? [], null);
     }
 
     /**
@@ -287,23 +280,20 @@ class MailboxDomainDnsRecords implements ModelInterface, ArrayAccess, JsonSerial
     {
         $invalidProperties = [];
 
-        if ($this->container['dkim'] === null) {
-            $invalidProperties[] = "'dkim' can't be null";
+        if ($this->container['credential'] === null) {
+            $invalidProperties[] = "'credential' can't be null";
         }
-        if ($this->container['dmarc'] === null) {
-            $invalidProperties[] = "'dmarc' can't be null";
+        if ($this->container['label'] === null) {
+            $invalidProperties[] = "'label' can't be null";
         }
-        if ($this->container['mail_from'] === null) {
-            $invalidProperties[] = "'mail_from' can't be null";
+        if ($this->container['mailboxes'] === null) {
+            $invalidProperties[] = "'mailboxes' can't be null";
         }
-        if ($this->container['mx'] === null) {
-            $invalidProperties[] = "'mx' can't be null";
+        if ($this->container['permissions'] === null) {
+            $invalidProperties[] = "'permissions' can't be null";
         }
-        if ($this->container['spf'] === null) {
-            $invalidProperties[] = "'spf' can't be null";
-        }
-        if ($this->container['verification'] === null) {
-            $invalidProperties[] = "'verification' can't be null";
+        if ($this->container['team'] === null) {
+            $invalidProperties[] = "'team' can't be null";
         }
         return $invalidProperties;
     }
@@ -318,163 +308,136 @@ class MailboxDomainDnsRecords implements ModelInterface, ArrayAccess, JsonSerial
 
 
     /**
-     * Gets dkim
+     * Gets credential
      *
-     * @return \Sendmux\Management\Model\MailboxDomainNameValueRecord[]
+     * @return \Sendmux\Management\Model\ConnectionCredential
      */
-    public function getDkim(): array
+    public function getCredential(): \Sendmux\Management\Model\ConnectionCredential
     {
-        return $this->container['dkim'];
+        return $this->container['credential'];
     }
 
     /**
-     * Sets dkim
+     * Sets credential
      *
-     * @param \Sendmux\Management\Model\MailboxDomainNameValueRecord[] $dkim Three Amazon SES DKIM CNAME records
+     * @param \Sendmux\Management\Model\ConnectionCredential $credential credential
      *
      * @return $this
      */
-    public function setDkim(array $dkim): static
+    public function setCredential(\Sendmux\Management\Model\ConnectionCredential $credential): static
     {
-        if (is_null($dkim)) {
-            throw new InvalidArgumentException('non-nullable dkim cannot be null');
+        if (is_null($credential)) {
+            throw new InvalidArgumentException('non-nullable credential cannot be null');
         }
-        $this->container['dkim'] = $dkim;
+        $this->container['credential'] = $credential;
 
         return $this;
     }
 
     /**
-     * Gets dmarc
+     * Gets label
      *
-     * @return \Sendmux\Management\Model\MailboxDomainNameValueRecord
+     * @return string
      */
-    public function getDmarc(): \Sendmux\Management\Model\MailboxDomainNameValueRecord
+    public function getLabel(): string
     {
-        return $this->container['dmarc'];
+        return $this->container['label'];
     }
 
     /**
-     * Sets dmarc
+     * Sets label
      *
-     * @param \Sendmux\Management\Model\MailboxDomainNameValueRecord $dmarc DMARC enforcement record (quarantine, no reporting)
+     * @param string $label Display label for this connection.
      *
      * @return $this
      */
-    public function setDmarc(\Sendmux\Management\Model\MailboxDomainNameValueRecord $dmarc): static
+    public function setLabel(string $label): static
     {
-        if (is_null($dmarc)) {
-            throw new InvalidArgumentException('non-nullable dmarc cannot be null');
+        if (is_null($label)) {
+            throw new InvalidArgumentException('non-nullable label cannot be null');
         }
-        $this->container['dmarc'] = $dmarc;
+        $this->container['label'] = $label;
 
         return $this;
     }
 
     /**
-     * Gets mail_from
+     * Gets mailboxes
      *
-     * @return \Sendmux\Management\Model\MailboxDomainMailFromRecords
+     * @return \Sendmux\Management\Model\ConnectionMailboxesInner[]
      */
-    public function getMailFrom(): \Sendmux\Management\Model\MailboxDomainMailFromRecords
+    public function getMailboxes(): array
     {
-        return $this->container['mail_from'];
+        return $this->container['mailboxes'];
     }
 
     /**
-     * Sets mail_from
+     * Sets mailboxes
      *
-     * @param \Sendmux\Management\Model\MailboxDomainMailFromRecords $mail_from mail_from
+     * @param \Sendmux\Management\Model\ConnectionMailboxesInner[] $mailboxes mailboxes
      *
      * @return $this
      */
-    public function setMailFrom(\Sendmux\Management\Model\MailboxDomainMailFromRecords $mail_from): static
+    public function setMailboxes(array $mailboxes): static
     {
-        if (is_null($mail_from)) {
-            throw new InvalidArgumentException('non-nullable mail_from cannot be null');
+        if (is_null($mailboxes)) {
+            throw new InvalidArgumentException('non-nullable mailboxes cannot be null');
         }
-        $this->container['mail_from'] = $mail_from;
+        $this->container['mailboxes'] = $mailboxes;
 
         return $this;
     }
 
     /**
-     * Gets mx
+     * Gets permissions
      *
-     * @return \Sendmux\Management\Model\MailboxDomainMxRecord[]
+     * @return string[]
      */
-    public function getMx(): array
+    public function getPermissions(): array
     {
-        return $this->container['mx'];
+        return $this->container['permissions'];
     }
 
     /**
-     * Sets mx
+     * Sets permissions
      *
-     * @param \Sendmux\Management\Model\MailboxDomainMxRecord[] $mx MX records the customer must place. All point at Sendmux's inbound mail servers.
+     * @param string[] $permissions permissions
      *
      * @return $this
      */
-    public function setMx(array $mx): static
+    public function setPermissions(array $permissions): static
     {
-        if (is_null($mx)) {
-            throw new InvalidArgumentException('non-nullable mx cannot be null');
+        if (is_null($permissions)) {
+            throw new InvalidArgumentException('non-nullable permissions cannot be null');
         }
-        $this->container['mx'] = $mx;
+        $this->container['permissions'] = $permissions;
 
         return $this;
     }
 
     /**
-     * Gets spf
+     * Gets team
      *
-     * @return \Sendmux\Management\Model\MailboxDomainNameValueRecord
+     * @return \Sendmux\Management\Model\ConnectionTeam
      */
-    public function getSpf(): \Sendmux\Management\Model\MailboxDomainNameValueRecord
+    public function getTeam(): \Sendmux\Management\Model\ConnectionTeam
     {
-        return $this->container['spf'];
+        return $this->container['team'];
     }
 
     /**
-     * Sets spf
+     * Sets team
      *
-     * @param \Sendmux\Management\Model\MailboxDomainNameValueRecord $spf SPF TXT record covering Amazon SES sending
+     * @param \Sendmux\Management\Model\ConnectionTeam $team team
      *
      * @return $this
      */
-    public function setSpf(\Sendmux\Management\Model\MailboxDomainNameValueRecord $spf): static
+    public function setTeam(\Sendmux\Management\Model\ConnectionTeam $team): static
     {
-        if (is_null($spf)) {
-            throw new InvalidArgumentException('non-nullable spf cannot be null');
+        if (is_null($team)) {
+            throw new InvalidArgumentException('non-nullable team cannot be null');
         }
-        $this->container['spf'] = $spf;
-
-        return $this;
-    }
-
-    /**
-     * Gets verification
-     *
-     * @return \Sendmux\Management\Model\MailboxDomainNameValueRecord
-     */
-    public function getVerification(): \Sendmux\Management\Model\MailboxDomainNameValueRecord
-    {
-        return $this->container['verification'];
-    }
-
-    /**
-     * Sets verification
-     *
-     * @param \Sendmux\Management\Model\MailboxDomainNameValueRecord $verification Ownership-proof TXT record (Sendmux-specific)
-     *
-     * @return $this
-     */
-    public function setVerification(\Sendmux\Management\Model\MailboxDomainNameValueRecord $verification): static
-    {
-        if (is_null($verification)) {
-            throw new InvalidArgumentException('non-nullable verification cannot be null');
-        }
-        $this->container['verification'] = $verification;
+        $this->container['team'] = $team;
 
         return $this;
     }

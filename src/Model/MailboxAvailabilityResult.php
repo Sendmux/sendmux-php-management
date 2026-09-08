@@ -1,7 +1,7 @@
 <?php
 
 /**
- * MailboxDomainDnsRecords
+ * MailboxAvailabilityResult
  *
  * PHP version 8.1
  *
@@ -35,14 +35,14 @@ use ReturnTypeWillChange;
 use Sendmux\Management\ObjectSerializer;
 
 /**
- * MailboxDomainDnsRecords Class Doc Comment
+ * MailboxAvailabilityResult Class Doc Comment
  *
  * @package  Sendmux\Management
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  * @implements ArrayAccess<string, mixed>
  */
-class MailboxDomainDnsRecords implements ModelInterface, ArrayAccess, JsonSerializable
+class MailboxAvailabilityResult implements ModelInterface, ArrayAccess, JsonSerializable
 {
     public const DISCRIMINATOR = null;
 
@@ -51,7 +51,7 @@ class MailboxDomainDnsRecords implements ModelInterface, ArrayAccess, JsonSerial
      *
      * @var string
      */
-    protected static string $openAPIModelName = 'MailboxDomainDnsRecords';
+    protected static string $openAPIModelName = 'MailboxAvailabilityResult';
 
     /**
      * Array of property to type mappings. Used for (de)serialization
@@ -59,12 +59,9 @@ class MailboxDomainDnsRecords implements ModelInterface, ArrayAccess, JsonSerial
      * @var array<string, string>
      */
     protected static array $openAPITypes = [
-        'dkim' => '\Sendmux\Management\Model\MailboxDomainNameValueRecord[]',
-        'dmarc' => '\Sendmux\Management\Model\MailboxDomainNameValueRecord',
-        'mail_from' => '\Sendmux\Management\Model\MailboxDomainMailFromRecords',
-        'mx' => '\Sendmux\Management\Model\MailboxDomainMxRecord[]',
-        'spf' => '\Sendmux\Management\Model\MailboxDomainNameValueRecord',
-        'verification' => '\Sendmux\Management\Model\MailboxDomainNameValueRecord'
+        'available' => 'bool',
+        'email' => 'string',
+        'reason' => '\Sendmux\Management\Model\MailboxAvailabilityReason'
     ];
 
     /**
@@ -73,12 +70,9 @@ class MailboxDomainDnsRecords implements ModelInterface, ArrayAccess, JsonSerial
      * @var array<string, string|null>
      */
     protected static array $openAPIFormats = [
-        'dkim' => null,
-        'dmarc' => null,
-        'mail_from' => null,
-        'mx' => null,
-        'spf' => null,
-        'verification' => null
+        'available' => null,
+        'email' => null,
+        'reason' => null
     ];
 
     /**
@@ -87,12 +81,9 @@ class MailboxDomainDnsRecords implements ModelInterface, ArrayAccess, JsonSerial
      * @var array<string, bool>
      */
     protected static array $openAPINullables = [
-        'dkim' => false,
-        'dmarc' => false,
-        'mail_from' => false,
-        'mx' => false,
-        'spf' => false,
-        'verification' => false
+        'available' => false,
+        'email' => false,
+        'reason' => false
     ];
 
     /**
@@ -171,12 +162,9 @@ class MailboxDomainDnsRecords implements ModelInterface, ArrayAccess, JsonSerial
      * @var array<string, string>
      */
     protected static array $attributeMap = [
-        'dkim' => 'dkim',
-        'dmarc' => 'dmarc',
-        'mail_from' => 'mail_from',
-        'mx' => 'mx',
-        'spf' => 'spf',
-        'verification' => 'verification'
+        'available' => 'available',
+        'email' => 'email',
+        'reason' => 'reason'
     ];
 
     /**
@@ -185,12 +173,9 @@ class MailboxDomainDnsRecords implements ModelInterface, ArrayAccess, JsonSerial
      * @var array<string, string>
      */
     protected static array $setters = [
-        'dkim' => 'setDkim',
-        'dmarc' => 'setDmarc',
-        'mail_from' => 'setMailFrom',
-        'mx' => 'setMx',
-        'spf' => 'setSpf',
-        'verification' => 'setVerification'
+        'available' => 'setAvailable',
+        'email' => 'setEmail',
+        'reason' => 'setReason'
     ];
 
     /**
@@ -199,12 +184,9 @@ class MailboxDomainDnsRecords implements ModelInterface, ArrayAccess, JsonSerial
      * @var array<string, string>
      */
     protected static array $getters = [
-        'dkim' => 'getDkim',
-        'dmarc' => 'getDmarc',
-        'mail_from' => 'getMailFrom',
-        'mx' => 'getMx',
-        'spf' => 'getSpf',
-        'verification' => 'getVerification'
+        'available' => 'getAvailable',
+        'email' => 'getEmail',
+        'reason' => 'getReason'
     ];
 
     /**
@@ -254,12 +236,9 @@ class MailboxDomainDnsRecords implements ModelInterface, ArrayAccess, JsonSerial
      */
     public function __construct(?array $data = null)
     {
-        $this->setIfExists('dkim', $data ?? [], null);
-        $this->setIfExists('dmarc', $data ?? [], null);
-        $this->setIfExists('mail_from', $data ?? [], null);
-        $this->setIfExists('mx', $data ?? [], null);
-        $this->setIfExists('spf', $data ?? [], null);
-        $this->setIfExists('verification', $data ?? [], null);
+        $this->setIfExists('available', $data ?? [], null);
+        $this->setIfExists('email', $data ?? [], null);
+        $this->setIfExists('reason', $data ?? [], null);
     }
 
     /**
@@ -287,23 +266,14 @@ class MailboxDomainDnsRecords implements ModelInterface, ArrayAccess, JsonSerial
     {
         $invalidProperties = [];
 
-        if ($this->container['dkim'] === null) {
-            $invalidProperties[] = "'dkim' can't be null";
+        if ($this->container['available'] === null) {
+            $invalidProperties[] = "'available' can't be null";
         }
-        if ($this->container['dmarc'] === null) {
-            $invalidProperties[] = "'dmarc' can't be null";
+        if ($this->container['email'] === null) {
+            $invalidProperties[] = "'email' can't be null";
         }
-        if ($this->container['mail_from'] === null) {
-            $invalidProperties[] = "'mail_from' can't be null";
-        }
-        if ($this->container['mx'] === null) {
-            $invalidProperties[] = "'mx' can't be null";
-        }
-        if ($this->container['spf'] === null) {
-            $invalidProperties[] = "'spf' can't be null";
-        }
-        if ($this->container['verification'] === null) {
-            $invalidProperties[] = "'verification' can't be null";
+        if ($this->container['reason'] === null) {
+            $invalidProperties[] = "'reason' can't be null";
         }
         return $invalidProperties;
     }
@@ -318,163 +288,82 @@ class MailboxDomainDnsRecords implements ModelInterface, ArrayAccess, JsonSerial
 
 
     /**
-     * Gets dkim
+     * Gets available
      *
-     * @return \Sendmux\Management\Model\MailboxDomainNameValueRecord[]
+     * @return bool
      */
-    public function getDkim(): array
+    public function getAvailable(): bool
     {
-        return $this->container['dkim'];
+        return $this->container['available'];
     }
 
     /**
-     * Sets dkim
+     * Sets available
      *
-     * @param \Sendmux\Management\Model\MailboxDomainNameValueRecord[] $dkim Three Amazon SES DKIM CNAME records
+     * @param bool $available Whether this address can be reserved for mailbox creation.
      *
      * @return $this
      */
-    public function setDkim(array $dkim): static
+    public function setAvailable(bool $available): static
     {
-        if (is_null($dkim)) {
-            throw new InvalidArgumentException('non-nullable dkim cannot be null');
+        if (is_null($available)) {
+            throw new InvalidArgumentException('non-nullable available cannot be null');
         }
-        $this->container['dkim'] = $dkim;
+        $this->container['available'] = $available;
 
         return $this;
     }
 
     /**
-     * Gets dmarc
+     * Gets email
      *
-     * @return \Sendmux\Management\Model\MailboxDomainNameValueRecord
+     * @return string
      */
-    public function getDmarc(): \Sendmux\Management\Model\MailboxDomainNameValueRecord
+    public function getEmail(): string
     {
-        return $this->container['dmarc'];
+        return $this->container['email'];
     }
 
     /**
-     * Sets dmarc
+     * Sets email
      *
-     * @param \Sendmux\Management\Model\MailboxDomainNameValueRecord $dmarc DMARC enforcement record (quarantine, no reporting)
+     * @param string $email Normalised mailbox email address checked.
      *
      * @return $this
      */
-    public function setDmarc(\Sendmux\Management\Model\MailboxDomainNameValueRecord $dmarc): static
+    public function setEmail(string $email): static
     {
-        if (is_null($dmarc)) {
-            throw new InvalidArgumentException('non-nullable dmarc cannot be null');
+        if (is_null($email)) {
+            throw new InvalidArgumentException('non-nullable email cannot be null');
         }
-        $this->container['dmarc'] = $dmarc;
+        $this->container['email'] = $email;
 
         return $this;
     }
 
     /**
-     * Gets mail_from
+     * Gets reason
      *
-     * @return \Sendmux\Management\Model\MailboxDomainMailFromRecords
+     * @return \Sendmux\Management\Model\MailboxAvailabilityReason
      */
-    public function getMailFrom(): \Sendmux\Management\Model\MailboxDomainMailFromRecords
+    public function getReason(): \Sendmux\Management\Model\MailboxAvailabilityReason
     {
-        return $this->container['mail_from'];
+        return $this->container['reason'];
     }
 
     /**
-     * Sets mail_from
+     * Sets reason
      *
-     * @param \Sendmux\Management\Model\MailboxDomainMailFromRecords $mail_from mail_from
+     * @param \Sendmux\Management\Model\MailboxAvailabilityReason $reason reason
      *
      * @return $this
      */
-    public function setMailFrom(\Sendmux\Management\Model\MailboxDomainMailFromRecords $mail_from): static
+    public function setReason(\Sendmux\Management\Model\MailboxAvailabilityReason $reason): static
     {
-        if (is_null($mail_from)) {
-            throw new InvalidArgumentException('non-nullable mail_from cannot be null');
+        if (is_null($reason)) {
+            throw new InvalidArgumentException('non-nullable reason cannot be null');
         }
-        $this->container['mail_from'] = $mail_from;
-
-        return $this;
-    }
-
-    /**
-     * Gets mx
-     *
-     * @return \Sendmux\Management\Model\MailboxDomainMxRecord[]
-     */
-    public function getMx(): array
-    {
-        return $this->container['mx'];
-    }
-
-    /**
-     * Sets mx
-     *
-     * @param \Sendmux\Management\Model\MailboxDomainMxRecord[] $mx MX records the customer must place. All point at Sendmux's inbound mail servers.
-     *
-     * @return $this
-     */
-    public function setMx(array $mx): static
-    {
-        if (is_null($mx)) {
-            throw new InvalidArgumentException('non-nullable mx cannot be null');
-        }
-        $this->container['mx'] = $mx;
-
-        return $this;
-    }
-
-    /**
-     * Gets spf
-     *
-     * @return \Sendmux\Management\Model\MailboxDomainNameValueRecord
-     */
-    public function getSpf(): \Sendmux\Management\Model\MailboxDomainNameValueRecord
-    {
-        return $this->container['spf'];
-    }
-
-    /**
-     * Sets spf
-     *
-     * @param \Sendmux\Management\Model\MailboxDomainNameValueRecord $spf SPF TXT record covering Amazon SES sending
-     *
-     * @return $this
-     */
-    public function setSpf(\Sendmux\Management\Model\MailboxDomainNameValueRecord $spf): static
-    {
-        if (is_null($spf)) {
-            throw new InvalidArgumentException('non-nullable spf cannot be null');
-        }
-        $this->container['spf'] = $spf;
-
-        return $this;
-    }
-
-    /**
-     * Gets verification
-     *
-     * @return \Sendmux\Management\Model\MailboxDomainNameValueRecord
-     */
-    public function getVerification(): \Sendmux\Management\Model\MailboxDomainNameValueRecord
-    {
-        return $this->container['verification'];
-    }
-
-    /**
-     * Sets verification
-     *
-     * @param \Sendmux\Management\Model\MailboxDomainNameValueRecord $verification Ownership-proof TXT record (Sendmux-specific)
-     *
-     * @return $this
-     */
-    public function setVerification(\Sendmux\Management\Model\MailboxDomainNameValueRecord $verification): static
-    {
-        if (is_null($verification)) {
-            throw new InvalidArgumentException('non-nullable verification cannot be null');
-        }
-        $this->container['verification'] = $verification;
+        $this->container['reason'] = $reason;
 
         return $this;
     }
