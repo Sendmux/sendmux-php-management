@@ -1,7 +1,7 @@
 <?php
 
 /**
- * WebhookCreateBody
+ * ConnectionResponse
  *
  * PHP version 8.1
  *
@@ -35,14 +35,14 @@ use ReturnTypeWillChange;
 use Sendmux\Management\ObjectSerializer;
 
 /**
- * WebhookCreateBody Class Doc Comment
+ * ConnectionResponse Class Doc Comment
  *
  * @package  Sendmux\Management
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  * @implements ArrayAccess<string, mixed>
  */
-class WebhookCreateBody implements ModelInterface, ArrayAccess, JsonSerializable
+class ConnectionResponse implements ModelInterface, ArrayAccess, JsonSerializable
 {
     public const DISCRIMINATOR = null;
 
@@ -51,7 +51,7 @@ class WebhookCreateBody implements ModelInterface, ArrayAccess, JsonSerializable
      *
      * @var string
      */
-    protected static string $openAPIModelName = 'WebhookCreateBody';
+    protected static string $openAPIModelName = 'ConnectionResponse';
 
     /**
      * Array of property to type mappings. Used for (de)serialization
@@ -59,11 +59,9 @@ class WebhookCreateBody implements ModelInterface, ArrayAccess, JsonSerializable
      * @var array<string, string>
      */
     protected static array $openAPITypes = [
-        'enabled' => 'bool',
-        'event_types' => 'string[]',
-        'filters' => '\Sendmux\Management\Model\WebhookFilters',
-        'name' => 'string',
-        'url' => 'string'
+        'meta' => '\Sendmux\Management\Model\ResponseMeta',
+        'ok' => 'bool',
+        'data' => '\Sendmux\Management\Model\Connection'
     ];
 
     /**
@@ -72,11 +70,9 @@ class WebhookCreateBody implements ModelInterface, ArrayAccess, JsonSerializable
      * @var array<string, string|null>
      */
     protected static array $openAPIFormats = [
-        'enabled' => null,
-        'event_types' => null,
-        'filters' => null,
-        'name' => null,
-        'url' => 'uri'
+        'meta' => null,
+        'ok' => null,
+        'data' => null
     ];
 
     /**
@@ -85,11 +81,9 @@ class WebhookCreateBody implements ModelInterface, ArrayAccess, JsonSerializable
      * @var array<string, bool>
      */
     protected static array $openAPINullables = [
-        'enabled' => false,
-        'event_types' => false,
-        'filters' => false,
-        'name' => false,
-        'url' => false
+        'meta' => false,
+        'ok' => false,
+        'data' => false
     ];
 
     /**
@@ -168,11 +162,9 @@ class WebhookCreateBody implements ModelInterface, ArrayAccess, JsonSerializable
      * @var array<string, string>
      */
     protected static array $attributeMap = [
-        'enabled' => 'enabled',
-        'event_types' => 'event_types',
-        'filters' => 'filters',
-        'name' => 'name',
-        'url' => 'url'
+        'meta' => 'meta',
+        'ok' => 'ok',
+        'data' => 'data'
     ];
 
     /**
@@ -181,11 +173,9 @@ class WebhookCreateBody implements ModelInterface, ArrayAccess, JsonSerializable
      * @var array<string, string>
      */
     protected static array $setters = [
-        'enabled' => 'setEnabled',
-        'event_types' => 'setEventTypes',
-        'filters' => 'setFilters',
-        'name' => 'setName',
-        'url' => 'setUrl'
+        'meta' => 'setMeta',
+        'ok' => 'setOk',
+        'data' => 'setData'
     ];
 
     /**
@@ -194,11 +184,9 @@ class WebhookCreateBody implements ModelInterface, ArrayAccess, JsonSerializable
      * @var array<string, string>
      */
     protected static array $getters = [
-        'enabled' => 'getEnabled',
-        'event_types' => 'getEventTypes',
-        'filters' => 'getFilters',
-        'name' => 'getName',
-        'url' => 'getUrl'
+        'meta' => 'getMeta',
+        'ok' => 'getOk',
+        'data' => 'getData'
     ];
 
     /**
@@ -233,35 +221,6 @@ class WebhookCreateBody implements ModelInterface, ArrayAccess, JsonSerializable
         return self::$openAPIModelName;
     }
 
-    public const EVENT_TYPES_MESSAGE_DELIVERED = 'message.delivered';
-    public const EVENT_TYPES_MESSAGE_BOUNCED = 'message.bounced';
-    public const EVENT_TYPES_MESSAGE_COMPLAINED = 'message.complained';
-    public const EVENT_TYPES_MESSAGE_REJECTED = 'message.rejected';
-    public const EVENT_TYPES_MESSAGE_DELIVERY_DELAYED = 'message.delivery_delayed';
-    public const EVENT_TYPES_MESSAGE_RECEIVED = 'message.received';
-    public const EVENT_TYPES_MESSAGE_RECEIVED_SPAM = 'message.received.spam';
-    public const EVENT_TYPES_SENDMUX_TEST = 'sendmux.test';
-    public const EVENT_TYPES_UNKNOWN_DEFAULT_OPEN_API = 'unknown_default_open_api';
-
-    /**
-     * Gets allowable values of the enum
-     *
-     * @return string[]
-     */
-    public static function getEventTypesAllowableValues()
-    {
-        return [
-            self::EVENT_TYPES_MESSAGE_DELIVERED,
-            self::EVENT_TYPES_MESSAGE_BOUNCED,
-            self::EVENT_TYPES_MESSAGE_COMPLAINED,
-            self::EVENT_TYPES_MESSAGE_REJECTED,
-            self::EVENT_TYPES_MESSAGE_DELIVERY_DELAYED,
-            self::EVENT_TYPES_MESSAGE_RECEIVED,
-            self::EVENT_TYPES_MESSAGE_RECEIVED_SPAM,
-            self::EVENT_TYPES_SENDMUX_TEST,
-            self::EVENT_TYPES_UNKNOWN_DEFAULT_OPEN_API,
-        ];
-    }
 
     /**
      * Associative array for storing property values
@@ -277,11 +236,9 @@ class WebhookCreateBody implements ModelInterface, ArrayAccess, JsonSerializable
      */
     public function __construct(?array $data = null)
     {
-        $this->setIfExists('enabled', $data ?? [], null);
-        $this->setIfExists('event_types', $data ?? [], null);
-        $this->setIfExists('filters', $data ?? [], null);
-        $this->setIfExists('name', $data ?? [], null);
-        $this->setIfExists('url', $data ?? [], null);
+        $this->setIfExists('meta', $data ?? [], null);
+        $this->setIfExists('ok', $data ?? [], null);
+        $this->setIfExists('data', $data ?? [], null);
     }
 
     /**
@@ -309,23 +266,14 @@ class WebhookCreateBody implements ModelInterface, ArrayAccess, JsonSerializable
     {
         $invalidProperties = [];
 
-        if ($this->container['event_types'] === null) {
-            $invalidProperties[] = "'event_types' can't be null";
+        if ($this->container['meta'] === null) {
+            $invalidProperties[] = "'meta' can't be null";
         }
-        if (!is_null($this->container['event_types']) && (count($this->container['event_types']) < 1)) {
-            $invalidProperties[] = "invalid value for 'event_types', number of items must be greater than or equal to 1.";
+        if ($this->container['ok'] === null) {
+            $invalidProperties[] = "'ok' can't be null";
         }
-
-        if (!is_null($this->container['name']) && (mb_strlen($this->container['name']) > 255)) {
-            $invalidProperties[] = "invalid value for 'name', the character length must be smaller than or equal to 255.";
-        }
-
-        if (!is_null($this->container['name']) && (mb_strlen($this->container['name']) < 1)) {
-            $invalidProperties[] = "invalid value for 'name', the character length must be bigger than or equal to 1.";
-        }
-
-        if ($this->container['url'] === null) {
-            $invalidProperties[] = "'url' can't be null";
+        if ($this->container['data'] === null) {
+            $invalidProperties[] = "'data' can't be null";
         }
         return $invalidProperties;
     }
@@ -340,157 +288,82 @@ class WebhookCreateBody implements ModelInterface, ArrayAccess, JsonSerializable
 
 
     /**
-     * Gets enabled
+     * Gets meta
      *
-     * @return bool|null
+     * @return \Sendmux\Management\Model\ResponseMeta
      */
-    public function getEnabled(): ?bool
+    public function getMeta(): \Sendmux\Management\Model\ResponseMeta
     {
-        return $this->container['enabled'];
+        return $this->container['meta'];
     }
 
     /**
-     * Sets enabled
+     * Sets meta
      *
-     * @param bool|null $enabled Defaults to true.
+     * @param \Sendmux\Management\Model\ResponseMeta $meta meta
      *
      * @return $this
      */
-    public function setEnabled(?bool $enabled): static
+    public function setMeta(\Sendmux\Management\Model\ResponseMeta $meta): static
     {
-        if (is_null($enabled)) {
-            throw new InvalidArgumentException('non-nullable enabled cannot be null');
+        if (is_null($meta)) {
+            throw new InvalidArgumentException('non-nullable meta cannot be null');
         }
-        $this->container['enabled'] = $enabled;
+        $this->container['meta'] = $meta;
 
         return $this;
     }
 
     /**
-     * Gets event_types
+     * Gets ok
      *
-     * @return string[]
+     * @return bool
      */
-    public function getEventTypes(): array
+    public function getOk(): bool
     {
-        return $this->container['event_types'];
+        return $this->container['ok'];
     }
 
     /**
-     * Sets event_types
+     * Sets ok
      *
-     * @param string[] $event_types At least one event type must be provided.
+     * @param bool $ok ok
      *
      * @return $this
      */
-    public function setEventTypes(array $event_types): static
+    public function setOk(bool $ok): static
     {
-        if (is_null($event_types)) {
-            throw new InvalidArgumentException('non-nullable event_types cannot be null');
+        if (is_null($ok)) {
+            throw new InvalidArgumentException('non-nullable ok cannot be null');
         }
-        $allowedValues = self::getEventTypesAllowableValues();
-        if (array_diff($event_types, $allowedValues)) {
-            throw new InvalidArgumentException(
-                sprintf(
-                    "Invalid value for 'event_types', must be one of '%s'",
-                    implode("', '", $allowedValues)
-                )
-            );
-        }
-
-
-        if ((count($event_types) < 1)) {
-            throw new InvalidArgumentException('invalid length for $event_types when calling WebhookCreateBody., number of items must be greater than or equal to 1.');
-        }
-        $this->container['event_types'] = $event_types;
+        $this->container['ok'] = $ok;
 
         return $this;
     }
 
     /**
-     * Gets filters
+     * Gets data
      *
-     * @return \Sendmux\Management\Model\WebhookFilters|null
+     * @return \Sendmux\Management\Model\Connection
      */
-    public function getFilters(): ?\Sendmux\Management\Model\WebhookFilters
+    public function getData(): \Sendmux\Management\Model\Connection
     {
-        return $this->container['filters'];
+        return $this->container['data'];
     }
 
     /**
-     * Sets filters
+     * Sets data
      *
-     * @param \Sendmux\Management\Model\WebhookFilters|null $filters Optional delivery scope. Omit or pass an empty mailbox_ids array to receive matching events for all mailboxes in the team.
+     * @param \Sendmux\Management\Model\Connection $data data
      *
      * @return $this
      */
-    public function setFilters(?\Sendmux\Management\Model\WebhookFilters $filters): static
+    public function setData(\Sendmux\Management\Model\Connection $data): static
     {
-        if (is_null($filters)) {
-            throw new InvalidArgumentException('non-nullable filters cannot be null');
+        if (is_null($data)) {
+            throw new InvalidArgumentException('non-nullable data cannot be null');
         }
-        $this->container['filters'] = $filters;
-
-        return $this;
-    }
-
-    /**
-     * Gets name
-     *
-     * @return string|null
-     */
-    public function getName(): ?string
-    {
-        return $this->container['name'];
-    }
-
-    /**
-     * Sets name
-     *
-     * @param string|null $name Optional human-friendly label (max 255 chars). Surfaced in dashboard list/detail views.
-     *
-     * @return $this
-     */
-    public function setName(?string $name): static
-    {
-        if (is_null($name)) {
-            throw new InvalidArgumentException('non-nullable name cannot be null');
-        }
-        if ((mb_strlen($name) > 255)) {
-            throw new InvalidArgumentException('invalid length for $name when calling WebhookCreateBody., must be smaller than or equal to 255.');
-        }
-        if ((mb_strlen($name) < 1)) {
-            throw new InvalidArgumentException('invalid length for $name when calling WebhookCreateBody., must be bigger than or equal to 1.');
-        }
-
-        $this->container['name'] = $name;
-
-        return $this;
-    }
-
-    /**
-     * Gets url
-     *
-     * @return string
-     */
-    public function getUrl(): string
-    {
-        return $this->container['url'];
-    }
-
-    /**
-     * Sets url
-     *
-     * @param string $url HTTPS endpoint that will receive event POSTs. Must be https:// — plain HTTP is rejected.
-     *
-     * @return $this
-     */
-    public function setUrl(string $url): static
-    {
-        if (is_null($url)) {
-            throw new InvalidArgumentException('non-nullable url cannot be null');
-        }
-        $this->container['url'] = $url;
+        $this->container['data'] = $data;
 
         return $this;
     }
